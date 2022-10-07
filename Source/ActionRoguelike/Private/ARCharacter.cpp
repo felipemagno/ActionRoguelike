@@ -44,5 +44,7 @@ void AARCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 	PlayerInputComponent->BindAxis("MoveForward", this,&AARCharacter::MoveForward);
+
+	PlayerInputComponent->BindAxis("Turn",this,&APawn::AddControllerYawInput);
 }
 
