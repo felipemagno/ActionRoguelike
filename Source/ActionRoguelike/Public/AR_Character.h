@@ -3,27 +3,31 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AR_MagicProjectile.h"
 #include "GameFramework/Character.h"
-#include "ARCharacter.generated.h"
+#include "AR_Character.generated.h"
 
 class USpringArmComponent;
 class UCameraComponent;
 
 UCLASS()
-class ACTIONROGUELIKE_API AARCharacter : public ACharacter
+class ACTIONROGUELIKE_API AAR_Character : public ACharacter
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this character's properties
-	AARCharacter();
+	AAR_Character();
 
 protected:
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<AAR_MagicProjectile> ProjectileClass;
+	
 	UPROPERTY(VisibleAnywhere)
 	USpringArmComponent* SpringArmComp;
 
 	UPROPERTY(VisibleAnywhere)
-	UCameraComponent* CameraComp;
+	UCameraComponent* CameraComp;	
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
@@ -32,6 +36,8 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	void MoveForward(float value);
+	void MoveRight(float value);
+	void PrimaryAttack();
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 };
