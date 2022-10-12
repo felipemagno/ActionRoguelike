@@ -63,6 +63,7 @@ void AAR_Character::PrimaryAttack()
 	FTransform SpawnTransform = FTransform(GetControlRotation(), SpawnLocation);
 	FActorSpawnParameters SpawnParamns;
 	SpawnParamns.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	SpawnParamns.Owner = this;
 
 	GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTransform, SpawnParamns);
 }
@@ -80,4 +81,5 @@ void AAR_Character::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 
 	PlayerInputComponent->BindAction("PrimaryAttack", IE_Pressed, this, &AAR_Character::PrimaryAttack);
+	PlayerInputComponent->BindAction("Jump",IE_Pressed,this,&AAR_Character::Jump);
 }
