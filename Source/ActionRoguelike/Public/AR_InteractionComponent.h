@@ -18,6 +18,9 @@ public:
 	// Sets default values for this component's properties
 	UAR_InteractionComponent();
 
+	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	bool bIsDebugging = false;
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;

@@ -3,10 +3,13 @@
 
 #include "AR_Character.h"
 
+#include "AR_InteractionComponent.h"
 #include "AR_MagicProjectile.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+/////////////////////
+// SETUP FUNCTIONS
 
 // Sets default values
 AAR_Character::AAR_Character()
@@ -23,8 +26,28 @@ AAR_Character::AAR_Character()
 
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	bUseControllerRotationYaw = false;
-	// ProjectileClass = TSubclassOf<AAR_MagicProjectile>();
+
+	InteractionComp = CreateDefaultSubobject<UAR_InteractionComponent>("InteractionComponent");
 }
+
+// Called to bind functionality to input
+void AAR_Character::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+{
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	PlayerInputComponent->BindAxis("MoveForward", this, &AAR_Character::MoveForward);
+	PlayerInputComponent->BindAxis("MoveRight", this, &AAR_Character::MoveRight);
+
+	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
+	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
+
+	PlayerInputComponent->BindAction("PrimaryAttack", IE_Pressed, this, &AAR_Character::PrimaryAttack);
+	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &AAR_Character::Jump);
+	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &AAR_Character::PrimaryInteract);
+}
+
+/////////////////////
+// UNREAL FUNCTIONS
 
 // Called when the game starts or when spawned
 void AAR_Character::BeginPlay()
@@ -37,6 +60,9 @@ void AAR_Character::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
+
+/////////////////////
+// PLAYER FUNCTIONS
 
 void AAR_Character::MoveForward(float value)
 {
@@ -53,10 +79,17 @@ void AAR_Character::MoveRight(float value)
 	ControlRot.Pitch = 0;
 	ControlRot.Roll = 0;
 
-	AddMovementInput(ControlRot.Vector().RightVector, value);
+	AddMovementInput(FRotationMatrix(ControlRot).GetScaledAxis(EAxis::Y), value);
 }
 
 void AAR_Character::PrimaryAttack()
+{
+	PlayAnimMontage(AttackAnimation);
+
+	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &AAR_Character::ExecutePrimaryAttack, 0.17f);
+}
+
+void AAR_Character::ExecutePrimaryAttack()
 {
 	FVector const SpawnLocation = GetMesh()->GetSocketLocation("Muzzle_01");
 
@@ -68,18 +101,8 @@ void AAR_Character::PrimaryAttack()
 	GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTransform, SpawnParamns);
 }
 
-
-// Called to bind functionality to input
-void AAR_Character::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+void AAR_Character::PrimaryInteract()
 {
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-	PlayerInputComponent->BindAxis("MoveForward", this, &AAR_Character::MoveForward);
-	PlayerInputComponent->BindAxis("MoveRight", this, &AAR_Character::MoveRight);
-
-	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
-	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
-
-	PlayerInputComponent->BindAction("PrimaryAttack", IE_Pressed, this, &AAR_Character::PrimaryAttack);
-	PlayerInputComponent->BindAction("Jump",IE_Pressed,this,&AAR_Character::Jump);
+	if (InteractionComp)
+		InteractionComp->PrimaryInteract();
 }

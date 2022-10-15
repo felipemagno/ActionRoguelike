@@ -3,12 +3,14 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AR_MagicProjectile.h"
 #include "GameFramework/Character.h"
 #include "AR_Character.generated.h"
 
 class USpringArmComponent;
 class UCameraComponent;
+class UAR_InteractionComponent;
+class UAnimMontage;
+class AAR_MagicProjectile;
 
 UCLASS()
 class ACTIONROGUELIKE_API AAR_Character : public ACharacter
@@ -20,14 +22,24 @@ public:
 	AAR_Character();
 
 protected:
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<AAR_MagicProjectile> ProjectileClass;
-	
 	UPROPERTY(VisibleAnywhere)
 	USpringArmComponent* SpringArmComp;
 
 	UPROPERTY(VisibleAnywhere)
-	UCameraComponent* CameraComp;	
+	UCameraComponent* CameraComp;
+
+	UPROPERTY(VisibleAnywhere)
+	UAR_InteractionComponent* InteractionComp;
+
+	UPROPERTY(EditAnywhere, Category = "Attack")
+	TSubclassOf<AAR_MagicProjectile> ProjectileClass;
+
+	UPROPERTY(EditAnywhere, Category = "Attack")
+	UAnimMontage* AttackAnimation;
+
+	UPROPERTY(EditAnywhere, Category = "Attack")
+	FTimerHandle TimerHandle_PrimaryAttack;
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
@@ -37,7 +49,9 @@ public:
 
 	void MoveForward(float value);
 	void MoveRight(float value);
-	void PrimaryAttack();	
+	void ExecutePrimaryAttack();
+	void PrimaryAttack();
+	void PrimaryInteract();
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 };
