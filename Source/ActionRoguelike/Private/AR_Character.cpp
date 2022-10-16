@@ -96,7 +96,7 @@ void AAR_Character::ExecutePrimaryAttack()
 	FTransform SpawnTransform = FTransform(GetControlRotation(), SpawnLocation);
 	FActorSpawnParameters SpawnParamns;
 	SpawnParamns.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	SpawnParamns.Owner = this;
+	SpawnParamns.Instigator = this;
 
 	GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTransform, SpawnParamns);
 }

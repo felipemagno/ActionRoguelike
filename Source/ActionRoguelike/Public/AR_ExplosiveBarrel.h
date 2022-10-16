@@ -31,5 +31,8 @@ protected:
 
 	UFUNCTION()
 	void OnHit(UPrimitiveComponent* PrimitiveComponent, AActor* Actor, UPrimitiveComponent* PrimitiveComponent1, FVector Vector, const FHitResult& HitResult);
+
+	UFUNCTION(BlueprintCallable)
+	void Explode();
 public:
 };

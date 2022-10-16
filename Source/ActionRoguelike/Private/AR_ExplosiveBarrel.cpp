@@ -18,8 +18,14 @@ void AAR_ExplosiveBarrel::OnHit(UPrimitiveComponent* PrimitiveComponent, AActor*
                                 const FHitResult& HitResult)
 {
 	if (Actor->ActorHasTag("Projectile"))
-		RadialForceComp->FireImpulse();	
+		Explode();
 }
+
+void AAR_ExplosiveBarrel::Explode()
+{
+	RadialForceComp->FireImpulse();	
+}
+
 
 // Sets default values
 AAR_ExplosiveBarrel::AAR_ExplosiveBarrel()

@@ -2,6 +2,8 @@
 
 
 #include "AR_ItemChest.h"
+
+#include "Interfaces/AR_IGameplayInterface.h"
 #include "Components/StaticMeshComponent.h"
 
 void AAR_ItemChest::Interact_Implementation(APawn* InstigatorPawn)

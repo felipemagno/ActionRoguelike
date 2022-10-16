@@ -3,7 +3,7 @@
 
 #include "AR_InteractionComponent.h"
 
-#include "AR_IGameplayInterface.h"
+#include "Interfaces/AR_IGameplayInterface.h"
 
 
 // Sets default values for this component's properties
