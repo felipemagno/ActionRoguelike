@@ -35,6 +35,9 @@ protected:
 	TSubclassOf<AAR_MagicProjectile> ProjectileClass;
 
 	UPROPERTY(EditAnywhere, Category = "Attack")
+	TSubclassOf<AAR_MagicProjectile> SpecialProjectileClass;
+
+	UPROPERTY(EditAnywhere, Category = "Attack")
 	UAnimMontage* AttackAnimation;
 
 	UPROPERTY(EditAnywhere, Category = "Attack")
@@ -51,7 +54,10 @@ public:
 	void MoveRight(float value);
 	void ExecutePrimaryAttack();
 	void PrimaryAttack();
+	void SpawnProjectile(TSubclassOf<AAR_MagicProjectile> Projectile);
 	void PrimaryInteract();
+	void ExecuteSpecialAttack();
+	void SpecialAttack();
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 };

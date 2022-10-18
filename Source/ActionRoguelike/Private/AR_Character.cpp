@@ -44,6 +44,7 @@ void AAR_Character::SetupPlayerInputComponent(UInputComponent* PlayerInputCompon
 	PlayerInputComponent->BindAction("PrimaryAttack", IE_Pressed, this, &AAR_Character::PrimaryAttack);
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &AAR_Character::Jump);
 	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &AAR_Character::PrimaryInteract);
+	PlayerInputComponent->BindAction("SpecialAttack", IE_Pressed, this, &AAR_Character::SpecialAttack);
 }
 
 /////////////////////
@@ -89,8 +90,10 @@ void AAR_Character::PrimaryAttack()
 	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &AAR_Character::ExecutePrimaryAttack, 0.17f);
 }
 
-void AAR_Character::ExecutePrimaryAttack()
+void AAR_Character::SpawnProjectile(TSubclassOf<AAR_MagicProjectile> Projectile)
 {
+	if (Projectile == nullptr) return;
+
 	FVector const SpawnLocation = GetMesh()->GetSocketLocation("Muzzle_01");
 
 	FRotator SpawnRotation = GetControlRotation();
@@ -108,20 +111,38 @@ void AAR_Character::ExecutePrimaryAttack()
 	                                                         QueryParams);
 	if (bBlockingHit)
 	{
-		EndLocation = Hit.ImpactPoint;	
+		EndLocation = Hit.ImpactPoint;
 	}
-	SpawnRotation =FRotationMatrix::MakeFromX(EndLocation - SpawnLocation).Rotator();
+	SpawnRotation = FRotationMatrix::MakeFromX(EndLocation - SpawnLocation).Rotator();
 
 	FTransform SpawnTransform = FTransform(SpawnRotation, SpawnLocation);
 	FActorSpawnParameters SpawnParamns;
 	SpawnParamns.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 	SpawnParamns.Instigator = this;
 
-	GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTransform, SpawnParamns);
+	GetWorld()->SpawnActor<AActor>(Projectile, SpawnTransform, SpawnParamns);
+}
+
+void AAR_Character::ExecutePrimaryAttack()
+{
+	SpawnProjectile(ProjectileClass);
 }
 
 void AAR_Character::PrimaryInteract()
 {
 	if (InteractionComp)
 		InteractionComp->PrimaryInteract();
+}
+
+
+void AAR_Character::SpecialAttack()
+{
+	PlayAnimMontage(AttackAnimation);
+
+	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &AAR_Character::ExecuteSpecialAttack, 0.17f);
+}
+
+void AAR_Character::ExecuteSpecialAttack()
+{
+	SpawnProjectile(SpecialProjectileClass);
 }
