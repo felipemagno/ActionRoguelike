@@ -34,5 +34,7 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 	void Explode();
+
+	virtual void PostInitializeComponents() override;
 public:
 };

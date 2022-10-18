@@ -9,8 +9,6 @@
 void AAR_ExplosiveBarrel::BeginPlay()
 {
 	Super::BeginPlay();
-
-	StaticMeshComp->OnComponentHit.AddDynamic(this, &AAR_ExplosiveBarrel::OnHit);
 }
 
 void AAR_ExplosiveBarrel::OnHit(UPrimitiveComponent* PrimitiveComponent, AActor* Actor,
@@ -18,12 +16,30 @@ void AAR_ExplosiveBarrel::OnHit(UPrimitiveComponent* PrimitiveComponent, AActor*
                                 const FHitResult& HitResult)
 {
 	if (Actor->ActorHasTag("Projectile"))
+	{
 		Explode();
+
+		// %s string
+		// %f float
+		UE_LOG(LogTemp,Warning,TEXT("Explode by OtherActor: %s, at game time: %f"),*GetNameSafe(Actor),GetWorld()->TimeSeconds);
+
+		FString CombinedString = FString::Printf(TEXT("Hit at location: %s"), *HitResult.ImpactPoint.ToString());
+		DrawDebugString(GetWorld(),HitResult.ImpactPoint,CombinedString, nullptr,FColor::Green,3,true,2);
+	}
 }
 
 void AAR_ExplosiveBarrel::Explode()
 {
-	RadialForceComp->FireImpulse();	
+	RadialForceComp->FireImpulse();
+	
+	UE_LOG(LogTemp,Log,TEXT("Barrel Explode"));	
+}
+
+void AAR_ExplosiveBarrel::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	StaticMeshComp->OnComponentHit.AddDynamic(this, &AAR_ExplosiveBarrel::OnHit);
 }
 
 
