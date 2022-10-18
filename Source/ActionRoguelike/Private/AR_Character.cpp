@@ -93,7 +93,26 @@ void AAR_Character::ExecutePrimaryAttack()
 {
 	FVector const SpawnLocation = GetMesh()->GetSocketLocation("Muzzle_01");
 
-	FTransform SpawnTransform = FTransform(GetControlRotation(), SpawnLocation);
+	FRotator SpawnRotation = GetControlRotation();
+
+
+	FCollisionQueryParams QueryParams;
+	QueryParams.AddIgnoredActor(GetOwner());
+
+	FVector StartLocation = CameraComp->GetComponentLocation();
+	FVector EndLocation = StartLocation + CameraComp->GetForwardVector() * 1000;
+
+	FHitResult Hit;
+	bool bBlockingHit = GetWorld()->LineTraceSingleByChannel(Hit, StartLocation, EndLocation,
+	                                                         ECollisionChannel::ECC_Visibility,
+	                                                         QueryParams);
+	if (bBlockingHit)
+	{
+		EndLocation = Hit.ImpactPoint;	
+	}
+	SpawnRotation =FRotationMatrix::MakeFromX(EndLocation - SpawnLocation).Rotator();
+
+	FTransform SpawnTransform = FTransform(SpawnRotation, SpawnLocation);
 	FActorSpawnParameters SpawnParamns;
 	SpawnParamns.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 	SpawnParamns.Instigator = this;
