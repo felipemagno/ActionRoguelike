@@ -3,8 +3,9 @@
 
 #include "AR_Character.h"
 
-#include "AR_InteractionComponent.h"
+#include "ActorComponent/AR_InteractionComponent.h"
 #include "AR_MagicProjectile.h"
+#include "ActorComponent/AR_AttributeComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -28,6 +29,7 @@ AAR_Character::AAR_Character()
 	bUseControllerRotationYaw = false;
 
 	InteractionComp = CreateDefaultSubobject<UAR_InteractionComponent>("InteractionComponent");
+	AttributeComp = CreateDefaultSubobject<UAR_AttributeComponent>("AttributeComponent");
 }
 
 // Called to bind functionality to input
@@ -93,7 +95,7 @@ void AAR_Character::PrimaryAttack()
 
 AAR_MagicProjectile* AAR_Character::SpawnProjectile(TSubclassOf<AAR_MagicProjectile> Projectile)
 {
-	if (Projectile == nullptr) nullptr;
+	if (!ensure(Projectile)) nullptr;
 
 	FVector const SpawnLocation = GetMesh()->GetSocketLocation("Muzzle_01");
 

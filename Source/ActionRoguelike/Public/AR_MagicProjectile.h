@@ -29,6 +29,10 @@ protected:
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	UParticleSystemComponent* EffectComp;
 
+	UFUNCTION()
+	void OnOverlap(UPrimitiveComponent* PrimitiveComponent, AActor* Actor, UPrimitiveComponent* PrimitiveComponent1,
+	               int I, bool bArg, const FHitResult& HitResult);
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 

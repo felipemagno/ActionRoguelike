@@ -1,7 +1,8 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "AR_InteractionComponent.h"
+
+#include "ActorComponent/AR_InteractionComponent.h"
 
 #include "Interfaces/AR_IGameplayInterface.h"
 

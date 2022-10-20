@@ -11,6 +11,7 @@ class UCameraComponent;
 class UAR_InteractionComponent;
 class UAnimMontage;
 class AAR_MagicProjectile;
+class UAR_AttributeComponent;
 
 UCLASS()
 class ACTIONROGUELIKE_API AAR_Character : public ACharacter
@@ -30,6 +31,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	UAR_InteractionComponent* InteractionComp;
+
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
+	UAR_AttributeComponent* AttributeComp;
 
 	UPROPERTY(EditAnywhere, Category = "Attack")
 	TSubclassOf<AAR_MagicProjectile> ProjectileClass;

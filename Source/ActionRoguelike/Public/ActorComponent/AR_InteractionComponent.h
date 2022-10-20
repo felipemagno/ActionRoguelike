@@ -7,7 +7,7 @@
 #include "AR_InteractionComponent.generated.h"
 
 
-UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
+UCLASS(ClassGroup=(ActionRoguelike), meta=(BlueprintSpawnableComponent))
 class ACTIONROGUELIKE_API UAR_InteractionComponent : public UActorComponent
 {
 	GENERATED_BODY()
