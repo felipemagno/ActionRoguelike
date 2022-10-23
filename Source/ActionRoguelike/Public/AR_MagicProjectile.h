@@ -29,6 +29,16 @@ protected:
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	UParticleSystemComponent* EffectComp;
 
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
+	UAudioComponent* LoopSoundComponent;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SFX")
+	USoundBase* HitSFX;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SFX")
+	USoundBase* LoopSFX;
+
+
 	UFUNCTION()
 	void OnOverlap(UPrimitiveComponent* PrimitiveComponent, AActor* Actor, UPrimitiveComponent* PrimitiveComponent1,
 	               int I, bool bArg, const FHitResult& HitResult);

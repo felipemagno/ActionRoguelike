@@ -27,6 +27,7 @@ protected:
 	UPROPERTY(EditAnywhere)
 	FTimerHandle TimerHandle_TeleportParticle;
 
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float ProjectileLifetime = 0.5f;
 

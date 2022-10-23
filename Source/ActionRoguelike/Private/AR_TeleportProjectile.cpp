@@ -6,7 +6,6 @@
 #include "Components/SphereComponent.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
-#include "Particles/ParticleSystem.h"
 
 bool TeleportFromHit = false;
 
@@ -57,6 +56,8 @@ void AAR_TeleportProjectile::TeleportInstigator()
 
 void AAR_TeleportProjectile::ExplodeParticle()
 {
+	if (HitSFX)
+		UGameplayStatics::PlaySoundAtLocation(GetWorld(), HitSFX, GetActorLocation(), GetActorRotation());
 	SphereComp->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	MovementComp->StopMovementImmediately();
 	UGameplayStatics::SpawnEmitterAtLocation(GetWorld(), HitParticle, GetActorLocation(), GetActorRotation());
