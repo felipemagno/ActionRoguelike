@@ -126,6 +126,29 @@ AAR_MagicProjectile* AAR_Character::SpawnProjectile(TSubclassOf<AAR_MagicProject
 	return Cast<AAR_MagicProjectile>(GetWorld()->SpawnActor<AActor>(Projectile, SpawnTransform, SpawnParamns));
 }
 
+void AAR_Character::Death(AActor* InstigatingActor, UAR_AttributeComponent* OwningAttribute)
+{
+	auto* PlayerController = Cast<APlayerController>(GetController());
+	if (PlayerController)
+		DisableInput(PlayerController);
+	SetActorEnableCollision(false);
+}
+
+void AAR_Character::HealthChanged(AActor* InstigatingActor, UAR_AttributeComponent* OwningAttribute,
+	float NewHealthValue, float DeltaValue, float NewHealthPercentage)
+{
+	if(!OwningAttribute->IsAlive()) return;
+	GetMesh()->SetScalarParameterValueOnMaterials("HitTime",GetWorld()->TimeSeconds);
+}
+
+void AAR_Character::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+
+	AttributeComp->OnDeath.AddDynamic(this, &AAR_Character::Death);
+	AttributeComp->OnHealthChanged.AddDynamic(this, &AAR_Character::HealthChanged);
+}
+
 void AAR_Character::ExecutePrimaryAttack()
 {
 	SpawnProjectile(ProjectileClass);
@@ -151,7 +174,7 @@ void AAR_Character::SpecialAttack()
 
 void AAR_Character::ExecuteSpecialAbility()
 {
-	SpawnProjectile(SpecialAbilityProjectileClass);	
+	SpawnProjectile(SpecialAbilityProjectileClass);
 }
 
 void AAR_Character::SpecialAbility()
@@ -159,6 +182,4 @@ void AAR_Character::SpecialAbility()
 	PlayAnimMontage(AttackAnimation);
 
 	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &AAR_Character::ExecuteSpecialAbility, 0.17f);
-	
 }
-

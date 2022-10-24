@@ -57,16 +57,29 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	// MOVEMENT
 	void MoveForward(float value);
 	void MoveRight(float value);
+
+	// ACTIONS
 	void ExecutePrimaryAttack();
 	void PrimaryAttack();
-	AAR_MagicProjectile* SpawnProjectile(TSubclassOf<AAR_MagicProjectile> Projectile);
 	void PrimaryInteract();
 	void ExecuteSpecialAttack();
 	void SpecialAttack();
 	void ExecuteSpecialAbility();
 	void SpecialAbility();
+
+	// HELPER
+	AAR_MagicProjectile* SpawnProjectile(TSubclassOf<AAR_MagicProjectile> Projectile);
+
+	UFUNCTION()
+	void Death(AActor* InstigatingActor, UAR_AttributeComponent* OwningAttribute);
+	UFUNCTION()
+	void HealthChanged(AActor* InstigatingActor, UAR_AttributeComponent* OwningAttribute, float NewHealthValue, float DeltaValue, float NewHealthPercentage);
+	
+	// OVERRIDES
+	virtual void PostInitializeComponents() override;
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 };
