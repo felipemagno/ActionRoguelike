@@ -15,10 +15,26 @@ UAR_AttributeComponent::UAR_AttributeComponent()
 	HealthMax = Health = 100;
 }
 
+bool UAR_AttributeComponent::IsAlive() const
+{
+	return Health > 0;
+}
+
 bool UAR_AttributeComponent::ApplyHealthChange(float Delta)
 {
-	Health += Delta;
+	if (Health <= 0)
+		return false;
 
-	OnHealthChanged.Broadcast(nullptr,this,Health,Delta,Health/HealthMax);
+	if (Health > 0 && (Health + Delta) <= 0)
+	{
+		Health = 0;
+		OnHealthChanged.Broadcast(nullptr, this, Health, Delta, Health / HealthMax);
+		OnDeath.Broadcast(nullptr, this);
+	}
+	else
+	{
+		Health += Delta;
+		OnHealthChanged.Broadcast(nullptr, this, Health, Delta, Health / HealthMax);
+	}
 	return true;
 }

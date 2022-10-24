@@ -10,6 +10,9 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FOnHealthChanged, AActor*, Instiga
                                               OwningAttribute, float, NewHealthValue, float, DeltaValue, float,
                                               NewHealthPercentage);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnDeath, AActor*, InstigatingActor, UAR_AttributeComponent*,
+											  OwningAttribute);
+
 UCLASS(ClassGroup=(ActionRoguelike), meta=(BlueprintSpawnableComponent))
 class ACTIONROGUELIKE_API UAR_AttributeComponent : public UActorComponent
 {
@@ -29,6 +32,12 @@ protected:
 public:
 	UPROPERTY(BlueprintAssignable)
 	FOnHealthChanged OnHealthChanged;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnDeath OnDeath;
+
+	UFUNCTION(BlueprintCallable)
+	bool IsAlive() const;
 
 	UFUNCTION(BlueprintCallable)
 	bool ApplyHealthChange(float Delta);
