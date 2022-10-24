@@ -72,7 +72,8 @@ public:
 
 	// HELPER
 	AAR_MagicProjectile* SpawnProjectile(TSubclassOf<AAR_MagicProjectile> Projectile);
-
+virtual void GetActorEyesViewPoint(FVector& OutLocation, FRotator& OutRotation) const override;
+	
 	UFUNCTION()
 	void Death(AActor* InstigatingActor, UAR_AttributeComponent* OwningAttribute);
 	UFUNCTION()

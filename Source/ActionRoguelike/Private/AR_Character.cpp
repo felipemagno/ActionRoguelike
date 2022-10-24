@@ -126,6 +126,12 @@ AAR_MagicProjectile* AAR_Character::SpawnProjectile(TSubclassOf<AAR_MagicProject
 	return Cast<AAR_MagicProjectile>(GetWorld()->SpawnActor<AActor>(Projectile, SpawnTransform, SpawnParamns));
 }
 
+void AAR_Character::GetActorEyesViewPoint(FVector& OutLocation, FRotator& OutRotation) const
+{
+	OutLocation = CameraComp->GetComponentLocation();
+	OutRotation = CameraComp->GetComponentRotation();
+}
+
 void AAR_Character::Death(AActor* InstigatingActor, UAR_AttributeComponent* OwningAttribute)
 {
 	auto* PlayerController = Cast<APlayerController>(GetController());

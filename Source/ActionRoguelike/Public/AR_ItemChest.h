@@ -7,8 +7,6 @@
 #include "Interfaces/AR_IGameplayInterface.h"
 #include "AR_ItemChest.generated.h"
 
-class UInstancedStaticMeshComponent;
-
 UCLASS()
 class ACTIONROGUELIKE_API AAR_ItemChest : public AActor, public IAR_IGameplayInterface
 {

@@ -33,3 +33,8 @@ bool UAR_AttributeComponent::ApplyHealthChange(float Delta)
 
 	return true;
 }
+
+bool UAR_AttributeComponent::IsFullHealth() const
+{
+	return !(Health < HealthMax);
+}
