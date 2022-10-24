@@ -25,16 +25,11 @@ bool UAR_AttributeComponent::ApplyHealthChange(float Delta)
 	if (Health <= 0)
 		return false;
 
-	if (Health > 0 && (Health + Delta) <= 0)
-	{
-		Health = 0;
-		OnHealthChanged.Broadcast(nullptr, this, Health, Delta, Health / HealthMax);
+	Health = FMath::Clamp(Health + Delta, 0, HealthMax);
+
+	OnHealthChanged.Broadcast(nullptr, this, Health, Delta, Health / HealthMax);
+	if (Health == 0)
 		OnDeath.Broadcast(nullptr, this);
-	}
-	else
-	{
-		Health += Delta;
-		OnHealthChanged.Broadcast(nullptr, this, Health, Delta, Health / HealthMax);
-	}
+
 	return true;
 }
