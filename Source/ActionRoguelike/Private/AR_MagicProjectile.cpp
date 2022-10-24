@@ -6,6 +6,7 @@
 #include "ActorComponent/AR_AttributeComponent.h"
 #include "Components/AudioComponent.h"
 #include "Components/SphereComponent.h"
+#include "GameFramework/Character.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystemComponent.h"
@@ -63,6 +64,16 @@ void AAR_MagicProjectile::BeginPlay()
 	SphereComp->OnComponentBeginOverlap.AddDynamic(this, &AAR_MagicProjectile::OnOverlap);
 	if (LoopSFX)
 		LoopSoundComponent->SetSound(LoopSFX);
+
+	if (MuzzleEffect)
+	{
+		auto* InstigatorCharacter = Cast<ACharacter>(GetInstigator());
+		if (InstigatorCharacter)
+		{
+			auto Mesh = InstigatorCharacter->GetMesh();
+			UGameplayStatics::SpawnEmitterAttached(MuzzleEffect,Mesh,TEXT("Muzzle_01"));	
+		}		
+	}
 }
 
 // Called every frame

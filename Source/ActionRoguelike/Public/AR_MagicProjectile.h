@@ -29,6 +29,9 @@ protected:
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	UParticleSystemComponent* EffectComp;
 
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	UParticleSystem* MuzzleEffect;
+
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	UAudioComponent* LoopSoundComponent;
 

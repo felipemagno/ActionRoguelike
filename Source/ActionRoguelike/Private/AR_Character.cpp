@@ -5,10 +5,12 @@
 
 #include "ActorComponent/AR_InteractionComponent.h"
 #include "AR_MagicProjectile.h"
+#include "Projects.h"
 #include "ActorComponent/AR_AttributeComponent.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Kismet/GameplayStatics.h"
 /////////////////////
 // SETUP FUNCTIONS
 
@@ -101,7 +103,6 @@ AAR_MagicProjectile* AAR_Character::SpawnProjectile(TSubclassOf<AAR_MagicProject
 
 	FRotator SpawnRotation = GetControlRotation();
 
-
 	FCollisionQueryParams QueryParams;
 	QueryParams.AddIgnoredActor(GetOwner());
 
@@ -123,7 +124,7 @@ AAR_MagicProjectile* AAR_Character::SpawnProjectile(TSubclassOf<AAR_MagicProject
 	SpawnParamns.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 	SpawnParamns.Instigator = this;
 
-	return Cast<AAR_MagicProjectile>(GetWorld()->SpawnActor<AActor>(Projectile, SpawnTransform, SpawnParamns));
+	return Cast<AAR_MagicProjectile>(GetWorld()->SpawnActor<AActor>(Projectile, SpawnTransform, SpawnParamns));;
 }
 
 void AAR_Character::GetActorEyesViewPoint(FVector& OutLocation, FRotator& OutRotation) const
@@ -141,10 +142,10 @@ void AAR_Character::Death(AActor* InstigatingActor, UAR_AttributeComponent* Owni
 }
 
 void AAR_Character::HealthChanged(AActor* InstigatingActor, UAR_AttributeComponent* OwningAttribute,
-	float NewHealthValue, float DeltaValue, float NewHealthPercentage)
+                                  float NewHealthValue, float DeltaValue, float NewHealthPercentage)
 {
-	if(!OwningAttribute->IsAlive()) return;
-	GetMesh()->SetScalarParameterValueOnMaterials("HitTime",GetWorld()->TimeSeconds);
+	if (!OwningAttribute->IsAlive()) return;
+	GetMesh()->SetScalarParameterValueOnMaterials("HitTime", GetWorld()->TimeSeconds);
 }
 
 void AAR_Character::PostInitializeComponents()
