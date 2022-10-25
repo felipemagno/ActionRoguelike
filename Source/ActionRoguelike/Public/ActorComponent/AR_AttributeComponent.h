@@ -11,7 +11,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FOnHealthChanged, AActor*, Instiga
                                               NewHealthPercentage);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnDeath, AActor*, InstigatingActor, UAR_AttributeComponent*,
-											  OwningAttribute);
+                                             OwningAttribute);
 
 UCLASS(ClassGroup=(ActionRoguelike), meta=(BlueprintSpawnableComponent))
 class ACTIONROGUELIKE_API UAR_AttributeComponent : public UActorComponent

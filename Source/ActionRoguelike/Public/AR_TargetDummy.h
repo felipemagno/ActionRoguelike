@@ -24,7 +24,8 @@ protected:
 	UAR_AttributeComponent* AttributeComponent;
 
 	UFUNCTION()
-	void OnHitEvent(AActor* InstigatingActor, UAR_AttributeComponent* OwningAttribute, float NewHealthValue, float DeltaValue, float NewHealthPercentage);
+	void OnHitEvent(AActor* InstigatingActor, UAR_AttributeComponent* OwningAttribute, float NewHealthValue,
+	                float DeltaValue, float NewHealthPercentage);
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;

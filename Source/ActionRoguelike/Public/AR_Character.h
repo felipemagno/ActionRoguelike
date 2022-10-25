@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Projectile/AR_BaseProjectile.h"
 #include "AR_Character.generated.h"
 
 class USpringArmComponent;
@@ -32,18 +33,18 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	UAR_InteractionComponent* InteractionComp;
 
-	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UAR_AttributeComponent* AttributeComp;
 
 	UPROPERTY(EditAnywhere, Category = "Attack")
-	TSubclassOf<AAR_MagicProjectile> ProjectileClass;
+	TSubclassOf<AAR_BaseProjectile> ProjectileClass;
 
 	UPROPERTY(EditAnywhere, Category = "Attack")
-	TSubclassOf<AAR_MagicProjectile> SpecialAttackProjectileClass;
+	TSubclassOf<AAR_BaseProjectile> SpecialAttackProjectileClass;
 
 	UPROPERTY(EditAnywhere, Category = "Attack")
-	TSubclassOf<AAR_MagicProjectile> SpecialAbilityProjectileClass;
-	
+	TSubclassOf<AAR_BaseProjectile> SpecialAbilityProjectileClass;
+
 	UPROPERTY(EditAnywhere, Category = "Attack")
 	UAnimMontage* AttackAnimation;
 
@@ -71,14 +72,15 @@ public:
 	void SpecialAbility();
 
 	// HELPER
-	AAR_MagicProjectile* SpawnProjectile(TSubclassOf<AAR_MagicProjectile> Projectile);
-virtual void GetActorEyesViewPoint(FVector& OutLocation, FRotator& OutRotation) const override;
-	
+	AAR_BaseProjectile* SpawnProjectile(TSubclassOf<AAR_BaseProjectile> Projectile);
+	virtual void GetActorEyesViewPoint(FVector& OutLocation, FRotator& OutRotation) const override;
+
 	UFUNCTION()
 	void Death(AActor* InstigatingActor, UAR_AttributeComponent* OwningAttribute);
 	UFUNCTION()
-	void HealthChanged(AActor* InstigatingActor, UAR_AttributeComponent* OwningAttribute, float NewHealthValue, float DeltaValue, float NewHealthPercentage);
-	
+	void HealthChanged(AActor* InstigatingActor, UAR_AttributeComponent* OwningAttribute, float NewHealthValue,
+	                   float DeltaValue, float NewHealthPercentage);
+
 	// OVERRIDES
 	virtual void PostInitializeComponents() override;
 	// Called to bind functionality to input

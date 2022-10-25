@@ -30,7 +30,7 @@ bool AAR_HealthPickup::PickupBehavior(APawn* InstigatorPawn)
 		Attribute->ApplyHealthChange(15);
 		return true;
 	}
-	else return false;
+	return false;
 }
 
 // Called every frame

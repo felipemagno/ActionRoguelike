@@ -15,25 +15,26 @@ class ACTIONROGUELIKE_API AAR_ExplosiveBarrel : public AActor
 {
 	GENERATED_BODY()
 
-public:		
+public:
 	// Sets default values for this actor's properties
 	AAR_ExplosiveBarrel();
 
 protected:
-	UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
-	UStaticMeshComponent* StaticMeshComp;	
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+	UStaticMeshComponent* StaticMeshComp;
 
-	UPROPERTY(VisibleAnywhere,BlueprintReadWrite)
+	UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
 	URadialForceComponent* RadialForceComp;
 
-	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float ExplosionDamage;
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
 	UFUNCTION()
-	void OnHit(UPrimitiveComponent* PrimitiveComponent, AActor* Actor, UPrimitiveComponent* PrimitiveComponent1, FVector Vector, const FHitResult& HitResult);
+	void OnHit(UPrimitiveComponent* PrimitiveComponent, AActor* Actor, UPrimitiveComponent* PrimitiveComponent1,
+	           FVector Vector, const FHitResult& HitResult);
 
 	UFUNCTION(BlueprintCallable)
 	void Explode();

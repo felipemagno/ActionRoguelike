@@ -10,7 +10,9 @@ void AAR_TargetDummy::OnHitEvent(AActor* InstigatingActor, UAR_AttributeComponen
                                  float NewHealthValue, float DeltaValue, float NewHealthPercentage)
 {
 	if (DeltaValue < 0)
+	{
 		MeshComp->SetScalarParameterValueOnMaterials("TimeToHit", GetWorld()->TimeSeconds);
+	}
 }
 
 // Sets default values

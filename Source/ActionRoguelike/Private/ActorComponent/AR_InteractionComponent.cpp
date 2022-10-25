@@ -1,7 +1,6 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-
 #include "ActorComponent/AR_InteractionComponent.h"
 
 #include "Interfaces/AR_IGameplayInterface.h"
@@ -98,7 +97,7 @@ void UAR_InteractionComponent::PrimaryInteract()
 					}
 					break;
 				}
-				else if (bIsDebugging)
+				if (bIsDebugging)
 				{
 					DebugSphereColor = FColor::Yellow;
 					DrawDebugSphere(GetWorld(), hit.ImpactPoint, traceRadius, 12, DebugSphereColor, false, 3, 0, 2);

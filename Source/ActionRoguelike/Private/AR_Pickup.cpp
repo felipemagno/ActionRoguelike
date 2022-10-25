@@ -41,7 +41,7 @@ void AAR_Pickup::Tick(float DeltaTime)
 }
 
 void AAR_Pickup::ResetInteraction()
-{	
+{
 	SetActorEnableCollision(true);
 	SetActorHiddenInGame(false);
 	bIsActive = true;
@@ -53,11 +53,11 @@ void AAR_Pickup::Interact_Implementation(APawn* InstigatorPawn)
 
 	if (bIsActive)
 	{
-		if(PickupBehavior(InstigatorPawn))
+		if (PickupBehavior(InstigatorPawn))
 		{
 			SetActorEnableCollision(false);
 			SetActorHiddenInGame(true);
-			GetWorldTimerManager().SetTimer(InactiveTimer,this,&AAR_Pickup::ResetInteraction,InactiveDuration);
+			GetWorldTimerManager().SetTimer(InactiveTimer, this, &AAR_Pickup::ResetInteraction, InactiveDuration);
 			bIsActive = false;
 		}
 	}

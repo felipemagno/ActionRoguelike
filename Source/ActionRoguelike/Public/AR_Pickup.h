@@ -31,7 +31,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool bIsActive;
 
-	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	FTimerHandle InactiveTimer;
 
 	virtual bool PickupBehavior(APawn* InstigatorPawn);

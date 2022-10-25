@@ -23,13 +23,17 @@ bool UAR_AttributeComponent::IsAlive() const
 bool UAR_AttributeComponent::ApplyHealthChange(float Delta)
 {
 	if (Health <= 0)
+	{
 		return false;
+	}
 
 	Health = FMath::Clamp(Health + Delta, 0, HealthMax);
 
 	OnHealthChanged.Broadcast(nullptr, this, Health, Delta, Health / HealthMax);
 	if (Health == 0)
+	{
 		OnDeath.Broadcast(nullptr, this);
+	}
 
 	return true;
 }

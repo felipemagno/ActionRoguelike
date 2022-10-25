@@ -14,11 +14,11 @@ class ACTIONROGUELIKE_API UAR_InteractionComponent : public UActorComponent
 
 public:
 	void PrimaryInteract();
-	
+
 	// Sets default values for this component's properties
 	UAR_InteractionComponent();
 
-	UPROPERTY(EditAnywhere,BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	bool bIsDebugging = false;
 
 protected:

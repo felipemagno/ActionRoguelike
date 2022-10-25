@@ -74,18 +74,19 @@ void AAR_ExplosiveBarrel::Explode()
 
 		bool bBlockingHit = GetWorld()->OverlapMultiByObjectType(OverlapResults, GetActorLocation(), FQuat::Identity,
 		                                                         QueryParams, CollisionShape);
-		DrawDebugSphere(GetWorld(),GetActorLocation(),RadialForceComp->Radius,32,FColor::Black,false,4,0,2);
+		DrawDebugSphere(GetWorld(), GetActorLocation(), RadialForceComp->Radius, 32, FColor::Black, false, 4, 0, 2);
 
 		TArray<AActor*> ActorsHit;
-		
+
 		for (FOverlapResult Overlap : OverlapResults)
 		{
 			AActor* HitActor = Overlap.GetActor();
 			if (HitActor && !ActorsHit.Contains(HitActor))
 			{
 				ActorsHit.Add(HitActor);
-				auto* AttributeComp = Cast<UAR_AttributeComponent>(HitActor->GetComponentByClass(UAR_AttributeComponent::StaticClass()));
-				if(AttributeComp)
+				auto* AttributeComp = Cast<UAR_AttributeComponent>(
+					HitActor->GetComponentByClass(UAR_AttributeComponent::StaticClass()));
+				if (AttributeComp)
 				{
 					AttributeComp->ApplyHealthChange(ExplosionDamage);
 				}

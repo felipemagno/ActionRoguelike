@@ -15,7 +15,7 @@ public:
 	UPROPERTY(EditAnywhere)
 	float TargetPitch;
 
-	void Interact_Implementation(APawn* InstigatorPawn) override;
+	virtual void Interact_Implementation(APawn* InstigatorPawn) override;
 
 	// Sets default values for this actor's properties
 	AAR_ItemChest();
