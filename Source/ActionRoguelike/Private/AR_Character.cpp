@@ -89,6 +89,7 @@ void AAR_Character::Death(AActor* InstigatingActor, UAR_AttributeComponent* Owni
 	auto* PlayerController = Cast<APlayerController>(GetController());
 	if (PlayerController)
 	{
+		
 		DisableInput(PlayerController);
 	}
 	SetActorEnableCollision(false);

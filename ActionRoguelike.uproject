@@ -1,41 +1,42 @@
 {
-  "FileVersion": 3,
-  "EngineAssociation": "5.0",
-  "Category": "",
-  "Description": "",
-  "Modules": [
-    {
-      "Name": "ActionRoguelike",
-      "Type": "Runtime",
-      "LoadingPhase": "Default",
-      "AdditionalDependencies": [
-        "Engine"
-      ]
-    }
-  ],
-  "Plugins": [
-    {
-      "Name": "ModelingToolsEditorMode",
-      "Enabled": true,
-      "TargetAllowList": [
-        "Editor"
-      ]
-    },
-    {
-      "Name": "Metasound",
-      "Enabled": true
-    },
-    {
-      "Name": "AudioModulation",
-      "Enabled": true
-    },
-    {
-      "Name": "AudioGameplay",
-      "Enabled": true
-    },
-    {
-      "Name": "AudioGameplayVolume",
-      "Enabled": true
-    }
-  ]
+	"FileVersion": 3,
+	"EngineAssociation": "5.0",
+	"Category": "",
+	"Description": "",
+	"Modules": [
+		{
+			"Name": "ActionRoguelike",
+			"Type": "Runtime",
+			"LoadingPhase": "Default",
+			"AdditionalDependencies": [
+				"Engine",
+				"AIModule"
+			]
+		}
+	],
+	"Plugins": [
+		{
+			"Name": "ModelingToolsEditorMode",
+			"Enabled": true,
+			"TargetAllowList": [
+				"Editor"
+			]
+		},
+		{
+			"Name": "Metasound",
+			"Enabled": true
+		},
+		{
+			"Name": "AudioModulation",
+			"Enabled": true
+		},
+		{
+			"Name": "AudioGameplay",
+			"Enabled": true
+		},
+		{
+			"Name": "AudioGameplayVolume",
+			"Enabled": true
+		}
+	]
 }
