@@ -3,32 +3,37 @@
 
 #include "AI/AR_AICharacter.h"
 
+#include "ActorComponent/AR_AttributeComponent.h"
+#include "AI/AR_AIController.h"
+#include "BehaviorTree/BlackboardComponent.h"
+#include "Perception/PawnSensingComponent.h"
+
 // Sets default values
 AAR_AICharacter::AAR_AICharacter()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PawnSensingComponent = CreateDefaultSubobject<UPawnSensingComponent>("PawnSensing");
+	AttributeComponent = CreateDefaultSubobject<UAR_AttributeComponent>("Attributes");
 
+
+	TargetActorKey = "TargetActor";
 }
 
-// Called when the game starts or when spawned
-void AAR_AICharacter::BeginPlay()
+void AAR_AICharacter::PostInitializeComponents()
 {
-	Super::BeginPlay();
-	
+	Super::PostInitializeComponents();
+
+	PawnSensingComponent->OnSeePawn.AddDynamic(this, &AAR_AICharacter::SightResponse);
 }
 
-// Called every frame
-void AAR_AICharacter::Tick(float DeltaTime)
+void AAR_AICharacter::SightResponse(APawn* Pawn)
 {
-	Super::Tick(DeltaTime);
+	AAR_AIController* AiController = GetController<AAR_AIController>();
+	if (AiController)
+	{
+		UBlackboardComponent* BlackboardComponent = AiController->GetBlackboardComponent();
 
+		BlackboardComponent->SetValueAsObject(TargetActorKey, Pawn);
+
+		DrawDebugString(GetWorld(), GetActorLocation(), "PLAYER SPOTTED", nullptr, FColor::Black, 4.0f, true);
+	}
 }
-
-// Called to bind functionality to input
-void AAR_AICharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
-{
-	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
-}
-

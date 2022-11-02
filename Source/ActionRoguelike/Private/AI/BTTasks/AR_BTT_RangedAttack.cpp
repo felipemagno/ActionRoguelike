@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "AI/AR_BTT_RangedAttack.h"
+#include "AI/Bttasks/AR_BTT_RangedAttack.h"
 
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"

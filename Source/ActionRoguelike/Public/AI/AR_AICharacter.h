@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "AR_AICharacter.generated.h"
 
+class UPawnSensingComponent;
+class UAR_AttributeComponent;
 UCLASS()
 class ACTIONROGUELIKE_API AAR_AICharacter : public ACharacter
 {
@@ -16,14 +18,16 @@ public:
 	AAR_AICharacter();
 
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+	UPawnSensingComponent* PawnSensingComponent;
 
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	UPROPERTY(VisibleAnywhere, Category = "Components")
+	UAR_AttributeComponent* AttributeComponent;
 
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	FName TargetActorKey;
+	
+	UFUNCTION()
+	void SightResponse(APawn* Pawn);
+	virtual void PostInitializeComponents() override;
 
 };

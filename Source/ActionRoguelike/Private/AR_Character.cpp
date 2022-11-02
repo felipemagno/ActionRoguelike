@@ -89,14 +89,13 @@ void AAR_Character::Death(AActor* InstigatingActor, UAR_AttributeComponent* Owni
 	auto* PlayerController = Cast<APlayerController>(GetController());
 	if (PlayerController)
 	{
-		
 		DisableInput(PlayerController);
 	}
 	SetActorEnableCollision(false);
 }
 
 void AAR_Character::HealthChanged(AActor* InstigatingActor, UAR_AttributeComponent* OwningAttribute,
-								  float NewHealthValue, float DeltaValue, float NewHealthPercentage)
+                                  float NewHealthValue, float DeltaValue, float NewHealthPercentage)
 {
 	if (!OwningAttribute->IsAlive())
 	{
@@ -105,8 +104,10 @@ void AAR_Character::HealthChanged(AActor* InstigatingActor, UAR_AttributeCompone
 	GetMesh()->SetScalarParameterValueOnMaterials("HitTime", GetWorld()->TimeSeconds);
 }
 
+
 /////////////////////
 // HELPER FUNCTIONS
+
 AAR_BaseProjectile* AAR_Character::SpawnProjectile(TSubclassOf<AAR_BaseProjectile> Projectile)
 {
 	if (!ensure(Projectile))
@@ -114,25 +115,8 @@ AAR_BaseProjectile* AAR_Character::SpawnProjectile(TSubclassOf<AAR_BaseProjectil
 		return nullptr;
 	}
 
-	const FVector SpawnLocation = GetMesh()->GetSocketLocation("Muzzle_01");
-
-	FRotator SpawnRotation = GetControlRotation();
-
-	FCollisionQueryParams QueryParams;
-	QueryParams.AddIgnoredActor(GetOwner());
-
-	FVector StartLocation = CameraComp->GetComponentLocation();
-	FVector EndLocation = StartLocation + CameraComp->GetForwardVector() * 1000;
-
-	FHitResult Hit;
-	bool bBlockingHit = GetWorld()->LineTraceSingleByChannel(Hit, StartLocation, EndLocation,
-															 ECC_Visibility,
-															 QueryParams);
-	if (bBlockingHit)
-	{
-		EndLocation = Hit.ImpactPoint;
-	}
-	SpawnRotation = FRotationMatrix::MakeFromX(EndLocation - SpawnLocation).Rotator();
+	const FVector SpawnLocation = GetMesh()->GetSocketLocation(ProjectileSpawnSocket);
+	const FRotator SpawnRotation = GetRotationToView(SpawnLocation);
 
 	FTransform SpawnTransform = FTransform(SpawnRotation, SpawnLocation);
 	FActorSpawnParameters SpawnParamns;
@@ -142,6 +126,27 @@ AAR_BaseProjectile* AAR_Character::SpawnProjectile(TSubclassOf<AAR_BaseProjectil
 	return Cast<AAR_BaseProjectile>(GetWorld()->SpawnActor<AActor>(Projectile, SpawnTransform, SpawnParamns));
 }
 
+FRotator AAR_Character::GetRotationToView(const FVector SpawnLocation)
+{
+	FRotator RotationToView = GetControlRotation();
+
+	FCollisionQueryParams QueryParams;
+	QueryParams.AddIgnoredActor(GetOwner());
+
+	FVector StartLocation = CameraComp->GetComponentLocation();
+	FVector EndLocation = StartLocation + CameraComp->GetForwardVector() * 1000;
+
+	FHitResult Hit;
+	bool bBlockingHit = GetWorld()->LineTraceSingleByChannel(Hit, StartLocation, EndLocation,
+	                                                         ECC_Visibility,
+	                                                         QueryParams);
+	if (bBlockingHit)
+	{
+		EndLocation = Hit.ImpactPoint;
+	}
+	RotationToView = FRotationMatrix::MakeFromX(EndLocation - SpawnLocation).Rotator();
+	return RotationToView;
+}
 
 /////////////////////
 // PLAYER ACTIONS
@@ -172,7 +177,7 @@ void AAR_Character::ExecutePrimaryAttack()
 void AAR_Character::PrimaryAttack()
 {
 	PlayAnimMontage(AttackAnimation);
-
+	
 	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &AAR_Character::ExecutePrimaryAttack, 0.17f);
 }
 

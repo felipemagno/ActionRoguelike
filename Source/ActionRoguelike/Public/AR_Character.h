@@ -49,6 +49,9 @@ protected:
 	UAnimMontage* AttackAnimation;
 
 	UPROPERTY(EditAnywhere, Category = "Attack")
+	FName ProjectileSpawnSocket = "Muzzle_01";
+
+	UPROPERTY(EditAnywhere, Category = "Attack")
 	FTimerHandle TimerHandle_PrimaryAttack;
 
 	// Called when the game starts or when spawned
@@ -73,6 +76,7 @@ public:
 
 	// HELPER
 	AAR_BaseProjectile* SpawnProjectile(TSubclassOf<AAR_BaseProjectile> Projectile);
+	FRotator GetRotationToView(FVector SpawnLocation);
 	virtual void GetActorEyesViewPoint(FVector& OutLocation, FRotator& OutRotation) const override;
 
 	UFUNCTION()
@@ -80,6 +84,7 @@ public:
 	UFUNCTION()
 	void HealthChanged(AActor* InstigatingActor, UAR_AttributeComponent* OwningAttribute, float NewHealthValue,
 	                   float DeltaValue, float NewHealthPercentage);
+	
 
 	// OVERRIDES
 	virtual void PostInitializeComponents() override;

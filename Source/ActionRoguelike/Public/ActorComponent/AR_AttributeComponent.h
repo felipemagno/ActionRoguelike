@@ -29,19 +29,29 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
 	float HealthMax;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attributes")
+	bool bGodMode;
+
 public:
 	UPROPERTY(BlueprintAssignable)
 	FOnHealthChanged OnHealthChanged;
 
 	UPROPERTY(BlueprintAssignable)
-	FOnDeath OnDeath;
+	FOnDeath OnDeath;	
 
 	UFUNCTION(BlueprintCallable)
 	bool IsAlive() const;
 
 	UFUNCTION(BlueprintCallable)
+	bool IsFullHealth() const;
+	
+	UFUNCTION(BlueprintCallable)
+	float GetHealthPercentage() const;
+
+	UFUNCTION(BlueprintCallable)
 	bool ApplyHealthChange(float Delta);
 
 	UFUNCTION(BlueprintCallable)
-	bool IsFullHealth() const;
+	bool ApplyMaxHeal();
+
 };

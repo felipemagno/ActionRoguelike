@@ -13,6 +13,7 @@ UAR_AttributeComponent::UAR_AttributeComponent()
 
 	// ...
 	HealthMax = Health = 100;
+	bGodMode = false;
 }
 
 bool UAR_AttributeComponent::IsAlive() const
@@ -22,6 +23,7 @@ bool UAR_AttributeComponent::IsAlive() const
 
 bool UAR_AttributeComponent::ApplyHealthChange(float Delta)
 {
+	if (bGodMode) return false;
 	if (Health <= 0)
 	{
 		return false;
@@ -38,7 +40,21 @@ bool UAR_AttributeComponent::ApplyHealthChange(float Delta)
 	return true;
 }
 
+bool UAR_AttributeComponent::ApplyMaxHeal()
+{
+	if (IsFullHealth() || Health <= 0) return false;
+	float Delta = HealthMax - Health;
+	Health = HealthMax;
+	OnHealthChanged.Broadcast(nullptr, this, Health, Delta, Health / HealthMax);
+	return true;
+}
+
 bool UAR_AttributeComponent::IsFullHealth() const
 {
 	return !(Health < HealthMax);
+}
+
+float UAR_AttributeComponent::GetHealthPercentage() const
+{
+	return Health / HealthMax;
 }

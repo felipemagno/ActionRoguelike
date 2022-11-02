@@ -9,14 +9,14 @@
 void AAR_AIController::BeginPlay()
 {
 	Super::BeginPlay();
+	if (ensureMsgf(BehaviorTree, TEXT("Behavior Tree is null! Please assign Behavior Tree at your AI Controller")))
+		RunBehaviorTree(BehaviorTree);
 
-	RunBehaviorTree(BehaviorTree);
-
-	auto* Player = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
-	if (Player)
-	{
-		GetBlackboardComponent()->SetValueAsVector("MoveToLocation", Player->GetActorLocation());
-
-		GetBlackboardComponent()->SetValueAsObject("TargetActor", Player);
-	}
+	// auto* Player = UGameplayStatics::GetPlayerPawn(GetWorld(), 0);
+	// if (Player)
+	// {
+	// 	GetBlackboardComponent()->SetValueAsVector("MoveToLocation", Player->GetActorLocation());
+	//
+	// 	GetBlackboardComponent()->SetValueAsObject("TargetActor", Player);
+	// }
 }
