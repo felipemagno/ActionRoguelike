@@ -8,7 +8,7 @@
 #include "PhysicsEngine/RadialForceComponent.h"
 #include "AR_BlackHoleProjectile.generated.h"
 
-UCLASS()
+UCLASS(Abstract)
 class ACTIONROGUELIKE_API AAR_BlackHoleProjectile : public AAR_BaseProjectile
 {
 	GENERATED_BODY()

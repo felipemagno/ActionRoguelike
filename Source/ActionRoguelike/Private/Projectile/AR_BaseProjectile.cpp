@@ -12,8 +12,7 @@
 #include "Particles/ParticleSystemComponent.h"
 
 // Sets default values
-AAR_BaseProjectile::AAR_BaseProjectile()
-{
+AAR_BaseProjectile::AAR_BaseProjectile(): MuzzleSockName(L"Muzzle_01") {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -39,6 +38,7 @@ AAR_BaseProjectile::AAR_BaseProjectile()
 
 	ShakeInnerRadius = 250;
 	ShakeOuterRadius = 2500;
+	MuzzleSockName = TEXT("Muzzle_01");
 }
 
 void AAR_BaseProjectile::PostInitializeComponents()
@@ -67,7 +67,7 @@ void AAR_BaseProjectile::BeginPlay()
 		if (InstigatorCharacter)
 		{
 			auto Mesh = InstigatorCharacter->GetMesh();
-			UGameplayStatics::SpawnEmitterAttached(MuzzleEffect, Mesh,TEXT("Muzzle_01"));
+			UGameplayStatics::SpawnEmitterAttached(MuzzleEffect, Mesh,MuzzleSockName);
 		}
 	}
 }

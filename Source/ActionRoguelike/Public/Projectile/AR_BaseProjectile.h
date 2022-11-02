@@ -55,6 +55,9 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "SFX")
 	USoundBase* LoopSFX;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Projectile")
+	FName MuzzleSockName;
+
 	// FUNCTIONS & EVENTS
 	UFUNCTION()
 	virtual void OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
