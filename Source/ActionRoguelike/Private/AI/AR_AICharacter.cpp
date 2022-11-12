@@ -14,6 +14,7 @@ AAR_AICharacter::AAR_AICharacter()
 	PawnSensingComponent = CreateDefaultSubobject<UPawnSensingComponent>("PawnSensing");
 	AttributeComponent = CreateDefaultSubobject<UAR_AttributeComponent>("Attributes");
 
+	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
 	TargetActorKey = "TargetActor";
 }

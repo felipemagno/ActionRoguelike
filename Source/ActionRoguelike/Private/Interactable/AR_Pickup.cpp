@@ -1,7 +1,7 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "AR_Pickup.h"
+#include "Interactable/AR_Pickup.h"
 
 #include "ActorComponent/AR_AttributeComponent.h"
 #include "Components/SphereComponent.h"

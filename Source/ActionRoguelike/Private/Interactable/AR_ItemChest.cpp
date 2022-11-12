@@ -1,7 +1,7 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "AR_ItemChest.h"
+#include "Interactable/AR_ItemChest.h"
 
 #include "Interfaces/AR_IGameplayInterface.h"
 #include "Components/StaticMeshComponent.h"

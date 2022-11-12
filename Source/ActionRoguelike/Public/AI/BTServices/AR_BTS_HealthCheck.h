@@ -25,7 +25,6 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "AI")
 	bool bIsCheckingBelowPercentage = true;
 
-
 	virtual void TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds) override;
 
 	virtual void OnSearchStart(FBehaviorTreeSearchData& SearchData) override;
