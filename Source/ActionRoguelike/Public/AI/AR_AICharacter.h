@@ -18,16 +18,15 @@ public:
 	AAR_AICharacter();
 
 protected:
-	UPROPERTY(VisibleAnywhere, Category = "Components")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UPawnSensingComponent* PawnSensingComponent;
 
-	UPROPERTY(VisibleAnywhere, Category = "Components")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UAR_AttributeComponent* AttributeComponent;
 
 	FName TargetActorKey;
-	
+
 	UFUNCTION()
 	void SightResponse(APawn* Pawn);
 	virtual void PostInitializeComponents() override;
-
 };
