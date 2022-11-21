@@ -15,5 +15,5 @@ EBTNodeResult::Type UAR_BTT_MaxHeal::ExecuteTask(UBehaviorTreeComponent& OwnerCo
 		Character->GetComponentByClass(UAR_AttributeComponent::StaticClass()));
 	if (!Attribute) return EBTNodeResult::Failed;
 
-	return Attribute->ApplyMaxHeal() ? EBTNodeResult::Succeeded : EBTNodeResult::Failed;
+	return Attribute->ApplyMaxHeal(Character) ? EBTNodeResult::Succeeded : EBTNodeResult::Failed;
 }

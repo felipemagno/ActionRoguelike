@@ -14,38 +14,40 @@ UAR_AttributeComponent::UAR_AttributeComponent()
 	// ...
 	HealthMax = Health = 100;
 	bGodMode = false;
+	
 }
+
 
 bool UAR_AttributeComponent::IsAlive() const
 {
 	return Health > 0;
 }
 
-bool UAR_AttributeComponent::ApplyHealthChange(float Delta)
+bool UAR_AttributeComponent::ApplyHealthChange(AActor* InstigatingActor, float Delta)
 {
 	if (bGodMode) return false;
-	if (Health <= 0)
+	if (Health <= 0 || FMath::IsNearlyZero(Delta))
 	{
 		return false;
 	}
 
 	Health = FMath::Clamp(Health + Delta, 0, HealthMax);
 
-	OnHealthChanged.Broadcast(nullptr, this, Health, Delta, Health / HealthMax);
+	OnHealthChanged.Broadcast(InstigatingActor, this, Health, Delta, Health / HealthMax);
 	if (Health == 0)
 	{
-		OnDeath.Broadcast(nullptr, this);
+		OnDeath.Broadcast(InstigatingActor, this);
 	}
 
 	return true;
 }
 
-bool UAR_AttributeComponent::ApplyMaxHeal()
+bool UAR_AttributeComponent::ApplyMaxHeal(AActor* InstigatingActor)
 {
 	if (IsFullHealth() || Health <= 0) return false;
 	float Delta = HealthMax - Health;
 	Health = HealthMax;
-	OnHealthChanged.Broadcast(nullptr, this, Health, Delta, Health / HealthMax);
+	OnHealthChanged.Broadcast(InstigatingActor, this, Health, Delta, Health / HealthMax);
 	return true;
 }
 

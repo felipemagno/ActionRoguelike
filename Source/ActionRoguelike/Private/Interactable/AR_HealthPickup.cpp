@@ -27,7 +27,7 @@ bool AAR_HealthPickup::PickupBehavior(APawn* InstigatorPawn)
 		InstigatorPawn->GetComponentByClass(UAR_AttributeComponent::StaticClass()));
 	if (Attribute && !Attribute->IsFullHealth())
 	{
-		Attribute->ApplyHealthChange(15);
+		Attribute->ApplyHealthChange(this, 15);
 		return true;
 	}
 	return false;

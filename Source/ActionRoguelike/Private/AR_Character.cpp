@@ -32,6 +32,8 @@ AAR_Character::AAR_Character()
 
 	InteractionComp = CreateDefaultSubobject<UAR_InteractionComponent>("InteractionComponent");
 	AttributeComp = CreateDefaultSubobject<UAR_AttributeComponent>("AttributeComponent");
+
+	HitFlashTime_ParameterName = "HitTime";
 }
 
 // Called to bind functionality to input
@@ -101,7 +103,7 @@ void AAR_Character::HealthChanged(AActor* InstigatingActor, UAR_AttributeCompone
 	{
 		return;
 	}
-	GetMesh()->SetScalarParameterValueOnMaterials("HitTime", GetWorld()->TimeSeconds);
+	GetMesh()->SetScalarParameterValueOnMaterials(HitFlashTime_ParameterName, GetWorld()->TimeSeconds);
 }
 
 
@@ -177,7 +179,7 @@ void AAR_Character::ExecutePrimaryAttack()
 void AAR_Character::PrimaryAttack()
 {
 	PlayAnimMontage(AttackAnimation);
-	
+
 	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &AAR_Character::ExecutePrimaryAttack, 0.17f);
 }
 

@@ -19,10 +19,12 @@ class ACTIONROGUELIKE_API UAR_AttributeComponent : public UActorComponent
 	GENERATED_BODY()
 
 public:
+
 	// Sets default values for this component's properties
 	UAR_AttributeComponent();
 
 protected:
+	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
 	float Health;
 
@@ -31,6 +33,7 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attributes")
 	bool bGodMode;
+
 
 public:
 	UPROPERTY(BlueprintAssignable)
@@ -49,9 +52,9 @@ public:
 	float GetHealthPercentage() const;
 
 	UFUNCTION(BlueprintCallable)
-	bool ApplyHealthChange(float Delta);
+	bool ApplyHealthChange(AActor* InstigatingActor, float Delta);
 
 	UFUNCTION(BlueprintCallable)
-	bool ApplyMaxHeal();
+	bool ApplyMaxHeal(AActor* InstigatingActor);
 
 };

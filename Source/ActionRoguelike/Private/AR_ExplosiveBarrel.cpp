@@ -88,7 +88,7 @@ void AAR_ExplosiveBarrel::Explode()
 					HitActor->GetComponentByClass(UAR_AttributeComponent::StaticClass()));
 				if (AttributeComp)
 				{
-					AttributeComp->ApplyHealthChange(ExplosionDamage);
+					AttributeComp->ApplyHealthChange(this, ExplosionDamage);
 				}
 			}
 		}

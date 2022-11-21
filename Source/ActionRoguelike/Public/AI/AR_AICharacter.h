@@ -26,7 +26,19 @@ protected:
 
 	FName TargetActorKey;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Effects")
+	FName HitFlashtime_ParameterName;
+
 	UFUNCTION()
 	void SightResponse(APawn* Pawn);
+
+
+	UFUNCTION()
+	void HealthChangedResponse(AActor* InstigatingActor, UAR_AttributeComponent* OwningAttribute, float NewHealthValue, float DeltaValue, float NewHealthPercentage);
+	void SetTargetActor(AActor* Actor);
+
 	virtual void PostInitializeComponents() override;
 };
+
+
+

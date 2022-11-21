@@ -27,7 +27,7 @@ void AAR_MagicProjectile::OnOverlap(UPrimitiveComponent* OverlappedComponent, AA
 			OtherActor->GetComponentByClass(UAR_AttributeComponent::StaticClass()));
 		if (Attribute)
 		{
-			Attribute->ApplyHealthChange(ProjectileDamage);
+			Attribute->ApplyHealthChange(GetInstigator(), ProjectileDamage);
 			Explode();
 
 			Destroy();

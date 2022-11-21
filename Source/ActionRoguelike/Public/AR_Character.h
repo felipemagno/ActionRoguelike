@@ -54,6 +54,9 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Attack")
 	FTimerHandle TimerHandle_PrimaryAttack;
 
+	UPROPERTY(EditAnywhere, Category = "Effects")
+	FName HitFlashTime_ParameterName;
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 

@@ -4,8 +4,16 @@
 #include "AI/Bttasks/AR_BTT_RangedAttack.h"
 
 #include "AIController.h"
+#include "ActorComponent/AR_AttributeComponent.h"
 #include "BehaviorTree/BlackboardComponent.h"
 #include "GameFramework/Character.h"
+
+
+UAR_BTT_RangedAttack::UAR_BTT_RangedAttack()
+{
+	FireSpread_Yaw = 5.0f;
+	FireSpread_Pitch = 5.0f;
+}
 
 EBTNodeResult::Type UAR_BTT_RangedAttack::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
@@ -14,6 +22,10 @@ EBTNodeResult::Type UAR_BTT_RangedAttack::ExecuteTask(UBehaviorTreeComponent& Ow
 		OwnerComp.GetBlackboardComponent()->GetValueAsObject(TargetActorKey.SelectedKeyName));
 
 	if (!TargetActor) return EBTNodeResult::Failed;
+	UAR_AttributeComponent* TargetAttribute = Cast<UAR_AttributeComponent>(
+		TargetActor->GetComponentByClass(UAR_AttributeComponent::StaticClass()));
+	if (!TargetAttribute) return EBTNodeResult::Failed;
+	if (!TargetAttribute->IsAlive()) return EBTNodeResult::Failed;
 
 	if (ensure(AIController))
 	{
@@ -26,6 +38,9 @@ EBTNodeResult::Type UAR_BTT_RangedAttack::ExecuteTask(UBehaviorTreeComponent& Ow
 
 			AICharacter->FaceRotation(MuzzleRotation);
 
+			MuzzleRotation.Yaw += FMath::RandRange(0.0f, FireSpread_Yaw);
+			MuzzleRotation.Pitch += FMath::RandRange(-FireSpread_Pitch, FireSpread_Pitch);
+
 			// FVector DebugLineStart = AICharacter->GetActorLocation();
 			// FVector DebugLineEnd = DebugLineStart + MuzzleRotation.Vector() * 1500.0f;
 			// DrawDebugDirectionalArrow(GetWorld(), DebugLineStart, DebugLineEnd, 15.0f, FColor::Black, false, 3, 0, 2);
@@ -34,7 +49,7 @@ EBTNodeResult::Type UAR_BTT_RangedAttack::ExecuteTask(UBehaviorTreeComponent& Ow
 			SpawnParameters.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 			SpawnParameters.Instigator = AICharacter;
 
-			auto* Projectile = GetWorld()->SpawnActor<AAR_BaseProjectile>(
+			const AAR_BaseProjectile* Projectile = GetWorld()->SpawnActor<AAR_BaseProjectile>(
 				ProjectileClass, MuzzleLocation, MuzzleRotation, SpawnParameters);
 
 			return Projectile ? EBTNodeResult::Succeeded : EBTNodeResult::Failed;

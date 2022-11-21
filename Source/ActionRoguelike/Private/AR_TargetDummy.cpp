@@ -11,7 +11,7 @@ void AAR_TargetDummy::OnHitEvent(AActor* InstigatingActor, UAR_AttributeComponen
 {
 	if (DeltaValue < 0)
 	{
-		MeshComp->SetScalarParameterValueOnMaterials("TimeToHit", GetWorld()->TimeSeconds);
+		MeshComp->SetScalarParameterValueOnMaterials("HitTime", GetWorld()->TimeSeconds);
 	}
 }
 

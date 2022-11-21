@@ -25,5 +25,16 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "AI")
 	FName SpawnSocketName = "Muzzle_01";
 
+	// How much random innacuracy to add to the shot being fired, this value is added in a random range from [-FireSpread_Yaw,FireSpread_Yaw]
+	UPROPERTY(EditAnywhere, Category = "AI")
+	float FireSpread_Yaw;
+
+	// How much random innacuracy to add to the shot being fired, this value is added in a random range from [-FireSpread_Pitch,FireSpread_Pitch]
+	UPROPERTY(EditAnywhere, Category = "AI")
+	float FireSpread_Pitch;
+	
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
+
+public:
+	UAR_BTT_RangedAttack();
 };
