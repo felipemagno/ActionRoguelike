@@ -7,7 +7,9 @@
 #include "ActorComponent/AR_AttributeComponent.h"
 #include "AI/AR_AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
+#include "Blueprint/UserWidget.h"
 #include "Perception/PawnSensingComponent.h"
+#include "UserInterface/AR_WorldUserWidget.h"
 
 // Sets default values
 AAR_AICharacter::AAR_AICharacter()
@@ -33,8 +35,16 @@ void AAR_AICharacter::HealthChangedResponse(AActor* InstigatingActor, UAR_Attrib
                                             float NewHealthValue, float DeltaValue, float NewHealthPercentage)
 {
 	// make sure to not target self and that whatever hit you has a controller to be targeted
-	if (InstigatingActor != this)
+	if (InstigatingActor != this && DeltaValue < 0)
 	{
+		if (!ActiveHealthBar)
+		{			
+			ActiveHealthBar = CreateWidget<UAR_WorldUserWidget>(GetWorld(),HealthBarWidgetClass);
+			ActiveHealthBar->AttachedActor = this;		
+			ActiveHealthBar->AddToViewport();
+		}
+
+
 		const APawn* InstigatingPawn = Cast<APawn>(InstigatingActor);
 
 		HitFlashtime_ParameterName = "HitFlashTime";

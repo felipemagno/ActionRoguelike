@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "AR_AICharacter.generated.h"
 
+
+class UAR_WorldUserWidget;
 class UPawnSensingComponent;
 class UAR_AttributeComponent;
 UCLASS()
@@ -24,10 +26,17 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UAR_AttributeComponent* AttributeComponent;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AI")
 	FName TargetActorKey;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Effects")
 	FName HitFlashtime_ParameterName;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI")
+	TSubclassOf<UAR_WorldUserWidget> HealthBarWidgetClass;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "UI")
+	UAR_WorldUserWidget* ActiveHealthBar;
 
 	UFUNCTION()
 	void SightResponse(APawn* Pawn);
