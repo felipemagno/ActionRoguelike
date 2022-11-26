@@ -57,4 +57,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	bool ApplyMaxHeal(AActor* InstigatingActor);
 
+	UFUNCTION()
+	void ToogleGodMode();
+
 };

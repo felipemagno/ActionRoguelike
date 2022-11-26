@@ -51,6 +51,11 @@ bool UAR_AttributeComponent::ApplyMaxHeal(AActor* InstigatingActor)
 	return true;
 }
 
+void UAR_AttributeComponent::ToogleGodMode()
+{
+	bGodMode = !bGodMode;
+}
+
 bool UAR_AttributeComponent::IsFullHealth() const
 {
 	return !(Health < HealthMax);

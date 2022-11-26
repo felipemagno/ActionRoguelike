@@ -106,6 +106,18 @@ void AAR_Character::HealthChanged(AActor* InstigatingActor, UAR_AttributeCompone
 	GetMesh()->SetScalarParameterValueOnMaterials(HitFlashTime_ParameterName, GetWorld()->TimeSeconds);
 }
 
+void AAR_Character::AR_HealSelf(float Ammount /* = 100 */)
+{
+	if (GIsEditor)
+		AttributeComp->ApplyHealthChange(this, Ammount);
+}
+
+void AAR_Character::AR_ToggleGodMode()
+{
+	if (GIsEditor)
+		AttributeComp->ToogleGodMode();
+}
+
 
 /////////////////////
 // HELPER FUNCTIONS

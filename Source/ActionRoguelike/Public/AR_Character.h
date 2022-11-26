@@ -88,6 +88,12 @@ public:
 	void HealthChanged(AActor* InstigatingActor, UAR_AttributeComponent* OwningAttribute, float NewHealthValue,
 	                   float DeltaValue, float NewHealthPercentage);
 	
+	// CONSOLE COMMANDS
+	UFUNCTION(Exec,meta=(DevelopmentOnly))
+	void AR_HealSelf(float Ammount = 100);
+
+	UFUNCTION(Exec,meta=(DevelopmentOnly))
+	void AR_ToggleGodMode();
 
 	// OVERRIDES
 	virtual void PostInitializeComponents() override;
