@@ -3,7 +3,7 @@
 
 #include "AI/AR_AICharacter.h"
 
-#include "AR_Character.h"
+#include "AR_Player.h"
 #include "ActorComponent/AR_AttributeComponent.h"
 #include "AI/AR_AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
@@ -49,7 +49,7 @@ void AAR_AICharacter::HealthChangedResponse(AActor* InstigatingActor, UAR_Attrib
 
 		HitFlashtime_ParameterName = "HitFlashTime";
 		GetMesh()->SetScalarParameterValueOnMaterials(HitFlashtime_ParameterName, GetWorld()->TimeSeconds);
-		if (InstigatingPawn && InstigatingPawn->Controller && Cast<AAR_Character>(InstigatingPawn))
+		if (InstigatingPawn && InstigatingPawn->Controller && Cast<AAR_Player>(InstigatingPawn))
 		{
 			SetTargetActor(InstigatingActor);
 		}

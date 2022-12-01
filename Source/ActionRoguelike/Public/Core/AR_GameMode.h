@@ -9,6 +9,8 @@
 
 class UEnvQuery;
 class UEnvQueryInstanceBlueprintWrapper;
+class AController;
+
 /**
  * 
  */
@@ -42,16 +44,21 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
 	FTimerHandle TimerHandle_SpawnAI;
 
-
+	// FUNCTIONS
 	UFUNCTION()
 	void OnSpawnEQSFinished(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus);
 
 	UFUNCTION()
 	void SpawnBotTimerElapsed();
 
+	UFUNCTION()
+	void RespawnPlayerElapsed(AController* Controller);
+
 public:
 	AAR_GameMode();
 
+	UFUNCTION()
+	virtual void OnActorKilled(AActor* VictimActor, AActor* KillerActor);
 
 	virtual void StartPlay() override;
 };

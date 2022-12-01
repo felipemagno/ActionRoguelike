@@ -5,7 +5,7 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Projectile/AR_BaseProjectile.h"
-#include "AR_Character.generated.h"
+#include "AR_Player.generated.h"
 
 class USpringArmComponent;
 class UCameraComponent;
@@ -15,13 +15,13 @@ class AAR_MagicProjectile;
 class UAR_AttributeComponent;
 
 UCLASS()
-class ACTIONROGUELIKE_API AAR_Character : public ACharacter
+class ACTIONROGUELIKE_API AAR_Player : public ACharacter
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this character's properties
-	AAR_Character();
+	AAR_Player();
 
 protected:
 	UPROPERTY(VisibleAnywhere)

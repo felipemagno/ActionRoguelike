@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "AR_Character.h"
+#include "AR_Player.h"
 
 #include "ActorComponent/AR_InteractionComponent.h"
 #include "Projectile/AR_MagicProjectile.h"
@@ -15,7 +15,7 @@
 // SETUP FUNCTIONS
 
 // Sets default values
-AAR_Character::AAR_Character()
+AAR_Player::AAR_Player()
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
@@ -37,47 +37,47 @@ AAR_Character::AAR_Character()
 }
 
 // Called to bind functionality to input
-void AAR_Character::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
+void AAR_Player::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	PlayerInputComponent->BindAxis("MoveForward", this, &AAR_Character::MoveForward);
-	PlayerInputComponent->BindAxis("MoveRight", this, &AAR_Character::MoveRight);
+	PlayerInputComponent->BindAxis("MoveForward", this, &AAR_Player::MoveForward);
+	PlayerInputComponent->BindAxis("MoveRight", this, &AAR_Player::MoveRight);
 
 	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 
-	PlayerInputComponent->BindAction("PrimaryAttack", IE_Pressed, this, &AAR_Character::PrimaryAttack);
-	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &AAR_Character::Jump);
-	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &AAR_Character::PrimaryInteract);
-	PlayerInputComponent->BindAction("SpecialAttack", IE_Pressed, this, &AAR_Character::SpecialAttack);
-	PlayerInputComponent->BindAction("SpecialAbility", IE_Pressed, this, &AAR_Character::SpecialAbility);
+	PlayerInputComponent->BindAction("PrimaryAttack", IE_Pressed, this, &AAR_Player::PrimaryAttack);
+	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &AAR_Player::Jump);
+	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &AAR_Player::PrimaryInteract);
+	PlayerInputComponent->BindAction("SpecialAttack", IE_Pressed, this, &AAR_Player::SpecialAttack);
+	PlayerInputComponent->BindAction("SpecialAbility", IE_Pressed, this, &AAR_Player::SpecialAbility);
 }
 
 /////////////////////
 // UNREAL FUNCTIONS
 
 // Called when the game starts or when spawned
-void AAR_Character::BeginPlay()
+void AAR_Player::BeginPlay()
 {
 	Super::BeginPlay();
 }
 
 // Called every frame
-void AAR_Character::Tick(float DeltaTime)
+void AAR_Player::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
 
-void AAR_Character::PostInitializeComponents()
+void AAR_Player::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
 
-	AttributeComp->OnDeath.AddDynamic(this, &AAR_Character::Death);
-	AttributeComp->OnHealthChanged.AddDynamic(this, &AAR_Character::HealthChanged);
+	AttributeComp->OnDeath.AddDynamic(this, &AAR_Player::Death);
+	AttributeComp->OnHealthChanged.AddDynamic(this, &AAR_Player::HealthChanged);
 }
 
-void AAR_Character::GetActorEyesViewPoint(FVector& OutLocation, FRotator& OutRotation) const
+void AAR_Player::GetActorEyesViewPoint(FVector& OutLocation, FRotator& OutRotation) const
 {
 	OutLocation = CameraComp->GetComponentLocation();
 	OutRotation = CameraComp->GetComponentRotation();
@@ -86,7 +86,7 @@ void AAR_Character::GetActorEyesViewPoint(FVector& OutLocation, FRotator& OutRot
 /////////////////////
 // EVENTS
 
-void AAR_Character::Death(AActor* InstigatingActor, UAR_AttributeComponent* OwningAttribute)
+void AAR_Player::Death(AActor* InstigatingActor, UAR_AttributeComponent* OwningAttribute)
 {
 	auto* PlayerController = Cast<APlayerController>(GetController());
 	if (PlayerController)
@@ -96,7 +96,7 @@ void AAR_Character::Death(AActor* InstigatingActor, UAR_AttributeComponent* Owni
 	SetActorEnableCollision(false);
 }
 
-void AAR_Character::HealthChanged(AActor* InstigatingActor, UAR_AttributeComponent* OwningAttribute,
+void AAR_Player::HealthChanged(AActor* InstigatingActor, UAR_AttributeComponent* OwningAttribute,
                                   float NewHealthValue, float DeltaValue, float NewHealthPercentage)
 {
 	if (!OwningAttribute->IsAlive())
@@ -106,13 +106,15 @@ void AAR_Character::HealthChanged(AActor* InstigatingActor, UAR_AttributeCompone
 	GetMesh()->SetScalarParameterValueOnMaterials(HitFlashTime_ParameterName, GetWorld()->TimeSeconds);
 }
 
-void AAR_Character::AR_HealSelf(float Ammount /* = 100 */)
+// CONSOLE COMMANDS
+
+void AAR_Player::AR_HealSelf(float Ammount /* = 100 */)
 {
 	if (GIsEditor)
 		AttributeComp->ApplyHealthChange(this, Ammount);
 }
 
-void AAR_Character::AR_ToggleGodMode()
+void AAR_Player::AR_ToggleGodMode()
 {
 	if (GIsEditor)
 		AttributeComp->ToogleGodMode();
@@ -122,7 +124,7 @@ void AAR_Character::AR_ToggleGodMode()
 /////////////////////
 // HELPER FUNCTIONS
 
-AAR_BaseProjectile* AAR_Character::SpawnProjectile(TSubclassOf<AAR_BaseProjectile> Projectile)
+AAR_BaseProjectile* AAR_Player::SpawnProjectile(TSubclassOf<AAR_BaseProjectile> Projectile)
 {
 	if (!ensure(Projectile))
 	{
@@ -140,7 +142,7 @@ AAR_BaseProjectile* AAR_Character::SpawnProjectile(TSubclassOf<AAR_BaseProjectil
 	return Cast<AAR_BaseProjectile>(GetWorld()->SpawnActor<AActor>(Projectile, SpawnTransform, SpawnParamns));
 }
 
-FRotator AAR_Character::GetRotationToView(const FVector SpawnLocation)
+FRotator AAR_Player::GetRotationToView(const FVector SpawnLocation)
 {
 	FRotator RotationToView = GetControlRotation();
 
@@ -165,7 +167,7 @@ FRotator AAR_Character::GetRotationToView(const FVector SpawnLocation)
 /////////////////////
 // PLAYER ACTIONS
 
-void AAR_Character::MoveForward(float value)
+void AAR_Player::MoveForward(float value)
 {
 	FRotator ControlRot = GetControlRotation();
 	ControlRot.Pitch = 0;
@@ -174,7 +176,7 @@ void AAR_Character::MoveForward(float value)
 	AddMovementInput(ControlRot.Vector(), value);
 }
 
-void AAR_Character::MoveRight(float value)
+void AAR_Player::MoveRight(float value)
 {
 	FRotator ControlRot = GetControlRotation();
 	ControlRot.Pitch = 0;
@@ -183,19 +185,19 @@ void AAR_Character::MoveRight(float value)
 	AddMovementInput(FRotationMatrix(ControlRot).GetScaledAxis(EAxis::Y), value);
 }
 
-void AAR_Character::ExecutePrimaryAttack()
+void AAR_Player::ExecutePrimaryAttack()
 {
 	SpawnProjectile(ProjectileClass);
 }
 
-void AAR_Character::PrimaryAttack()
+void AAR_Player::PrimaryAttack()
 {
 	PlayAnimMontage(AttackAnimation);
 
-	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &AAR_Character::ExecutePrimaryAttack, 0.17f);
+	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &AAR_Player::ExecutePrimaryAttack, 0.17f);
 }
 
-void AAR_Character::PrimaryInteract()
+void AAR_Player::PrimaryInteract()
 {
 	if (InteractionComp)
 	{
@@ -203,26 +205,26 @@ void AAR_Character::PrimaryInteract()
 	}
 }
 
-void AAR_Character::ExecuteSpecialAttack()
+void AAR_Player::ExecuteSpecialAttack()
 {
 	SpawnProjectile(SpecialAttackProjectileClass);
 }
 
-void AAR_Character::SpecialAttack()
+void AAR_Player::SpecialAttack()
 {
 	PlayAnimMontage(AttackAnimation);
 
-	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &AAR_Character::ExecuteSpecialAttack, 0.17f);
+	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &AAR_Player::ExecuteSpecialAttack, 0.17f);
 }
 
-void AAR_Character::ExecuteSpecialAbility()
+void AAR_Player::ExecuteSpecialAbility()
 {
 	SpawnProjectile(SpecialAbilityProjectileClass);
 }
 
-void AAR_Character::SpecialAbility()
+void AAR_Player::SpecialAbility()
 {
 	PlayAnimMontage(AttackAnimation);
 
-	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &AAR_Character::ExecuteSpecialAbility, 0.17f);
+	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &AAR_Player::ExecuteSpecialAbility, 0.17f);
 }

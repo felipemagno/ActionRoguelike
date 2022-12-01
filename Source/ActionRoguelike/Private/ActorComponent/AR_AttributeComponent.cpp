@@ -3,6 +3,11 @@
 
 #include "ActorComponent/AR_AttributeComponent.h"
 
+#include "Core/AR_GameMode.h"
+
+static TAutoConsoleVariable<float> CVarDamageMultiplier(
+	TEXT("ar_DamageMultiplier"), 1.0f,TEXT("Multiplies all damage in game"),
+	ECVF_Cheat);
 
 // Sets default values for this component's properties
 UAR_AttributeComponent::UAR_AttributeComponent()
@@ -14,7 +19,6 @@ UAR_AttributeComponent::UAR_AttributeComponent()
 	// ...
 	HealthMax = Health = 100;
 	bGodMode = false;
-	
 }
 
 
@@ -26,9 +30,20 @@ bool UAR_AttributeComponent::IsAlive() const
 bool UAR_AttributeComponent::ApplyHealthChange(AActor* InstigatingActor, float Delta)
 {
 	if (bGodMode) return false;
+	// if (!GetOwner()->CanBeDamaged())
+	// {
+	// 	// "God" cheat sets "can be damaged" to false
+	// 	UE_LOG(LogTemp,Log,TEXT("%s cannot be damaged"),GetOwner());
+	// }
+	
 	if (Health <= 0 || FMath::IsNearlyZero(Delta))
 	{
 		return false;
+	}
+
+	if (Delta < 0)
+	{
+		Delta *= CVarDamageMultiplier.GetValueOnGameThread();
 	}
 
 	Health = FMath::Clamp(Health + Delta, 0, HealthMax);
@@ -37,6 +52,9 @@ bool UAR_AttributeComponent::ApplyHealthChange(AActor* InstigatingActor, float D
 	if (Health == 0)
 	{
 		OnDeath.Broadcast(InstigatingActor, this);
+		auto* GM = GetWorld()->GetAuthGameMode<AAR_GameMode>();
+		if (GM)
+			GM->OnActorKilled(GetOwner(), InstigatingActor);
 	}
 
 	return true;

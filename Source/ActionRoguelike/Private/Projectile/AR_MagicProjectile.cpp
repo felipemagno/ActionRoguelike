@@ -5,6 +5,7 @@
 
 #include "ActorComponent/AR_AttributeComponent.h"
 #include "Components/AudioComponent.h"
+#include "Core/AR_GameplayFunctionLibrary.h"
 #include "GameFramework/Character.h"
 #include "Kismet/GameplayStatics.h"
 #include "Particles/ParticleSystemComponent.h"
@@ -21,13 +22,10 @@ void AAR_MagicProjectile::OnOverlap(UPrimitiveComponent* OverlappedComponent, AA
                                     UPrimitiveComponent* OtherComp,
                                     int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (OtherActor)
+	if (OtherActor && OtherActor != GetInstigator())
 	{
-		auto* Attribute = Cast<UAR_AttributeComponent>(
-			OtherActor->GetComponentByClass(UAR_AttributeComponent::StaticClass()));
-		if (Attribute)
+		if (UAR_GameplayFunctionLibrary::ApplyDirectionalDamage(GetInstigator(),OtherActor,ProjectileDamage,SweepResult))
 		{
-			Attribute->ApplyHealthChange(GetInstigator(), ProjectileDamage);
 			Explode();
 
 			Destroy();

@@ -5,6 +5,9 @@
 
 #include "Interfaces/AR_IGameplayInterface.h"
 
+static TAutoConsoleVariable<bool> CVarDebugDrawInteraction(
+	TEXT("ar_Debug.DrawInteraction"), false,TEXT("Enable drawing debug of the interaction action."),
+	ECVF_Cheat);
 
 // Sets default values for this component's properties
 UAR_InteractionComponent::UAR_InteractionComponent()
@@ -37,6 +40,8 @@ void UAR_InteractionComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 
 void UAR_InteractionComponent::PrimaryInteract()
 {
+	bool bIsDebugging = CVarDebugDrawInteraction.GetValueOnGameThread();
+
 	FCollisionObjectQueryParams ObjectQueryParams;
 	ObjectQueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
 
@@ -85,6 +90,11 @@ void UAR_InteractionComponent::PrimaryInteract()
 			if (HitActor)
 			{
 				FColor DebugSphereColor;
+				if (bIsDebugging)
+				{
+					DebugSphereColor = FColor::Yellow;
+					DrawDebugSphere(GetWorld(), hit.ImpactPoint, traceRadius, 12, DebugSphereColor, false, 3, 0, 2);
+				}
 				if (HitActor->Implements<UAR_IGameplayInterface>())
 				{
 					APawn* OwnerPawn = Cast<APawn>(Owner);
@@ -96,11 +106,6 @@ void UAR_InteractionComponent::PrimaryInteract()
 						DrawDebugSphere(GetWorld(), hit.ImpactPoint, traceRadius, 12, DebugSphereColor, false, 3, 0, 2);
 					}
 					break;
-				}
-				if (bIsDebugging)
-				{
-					DebugSphereColor = FColor::Yellow;
-					DrawDebugSphere(GetWorld(), hit.ImpactPoint, traceRadius, 12, DebugSphereColor, false, 3, 0, 2);
 				}
 			}
 		}
