@@ -14,7 +14,7 @@ class UAnimMontage;
 class AAR_MagicProjectile;
 class UAR_AttributeComponent;
 
-UCLASS()
+UCLASS(Abstract)
 class ACTIONROGUELIKE_API AAR_Player : public ACharacter
 {
 	GENERATED_BODY()
