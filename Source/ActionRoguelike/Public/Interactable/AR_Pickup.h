@@ -34,6 +34,9 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	FTimerHandle InactiveTimer;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	int32 CreditsValue;
+
 	virtual bool PickupBehavior(APawn* InstigatorPawn);
 
 	// Called when the game starts or when spawned
@@ -44,5 +47,9 @@ public:
 
 	UFUNCTION()
 	void ResetInteraction();
+
+	// GAMEPLAY INTERFACE
 	virtual void Interact_Implementation(APawn* InstigatorPawn) override;
+virtual int32 GetCreditsValue_Implementation() override;
+	
 };

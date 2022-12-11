@@ -21,6 +21,7 @@ AAR_Pickup::AAR_Pickup()
 
 	bIsActive = true;
 	InactiveDuration = 5.0f;
+	CreditsValue = 1;
 }
 
 bool AAR_Pickup::PickupBehavior(APawn* InstigatorPawn)
@@ -61,4 +62,9 @@ void AAR_Pickup::Interact_Implementation(APawn* InstigatorPawn)
 			bIsActive = false;
 		}
 	}
+}
+
+int32 AAR_Pickup::GetCreditsValue_Implementation()
+{
+	return CreditsValue;
 }

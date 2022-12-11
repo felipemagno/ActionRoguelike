@@ -8,6 +8,7 @@
 #include "Projects.h"
 #include "ActorComponent/AR_AttributeComponent.h"
 #include "Camera/CameraComponent.h"
+#include "Core/AR_PlayerState.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
@@ -162,6 +163,42 @@ FRotator AAR_Player::GetRotationToView(const FVector SpawnLocation)
 	}
 	RotationToView = FRotationMatrix::MakeFromX(EndLocation - SpawnLocation).Rotator();
 	return RotationToView;
+}
+
+/////////////////////
+// GAMEPLAY INTERFACE 
+bool AAR_Player::SpendCredits_Implementation(int32 CreditsCost)
+{
+	AAR_PlayerState* MyPlayerState = Cast<AAR_PlayerState>(GetPlayerState());
+	if (ensure(MyPlayerState))
+	{
+		return MyPlayerState->UpdateCredits(-CreditsCost);	
+	}else
+	{
+		UE_LOG(LogTemp,Warning,TEXT("%s is not subclass of AAR_PlayerState"),GetPlayerState());
+		return false;
+	}
+}
+
+bool AAR_Player::ReceiveCredits_Implementation(int32 CreditsReceived)
+{
+	
+	AAR_PlayerState* MyPlayerState = Cast<AAR_PlayerState>(GetPlayerState());
+	if (ensure(MyPlayerState))
+	{
+		return MyPlayerState->UpdateCredits(CreditsReceived);	
+	}else
+	{
+		UE_LOG(LogTemp,Warning,TEXT("%s is not subclass of AAR_PlayerState"),GetPlayerState());
+		return false;
+	}
+	
+}
+
+int32 AAR_Player::GetCreditsValue_Implementation()
+{
+	AAR_PlayerState* MyPlayerState = GetPlayerStateChecked<AAR_PlayerState>();
+	return MyPlayerState->GetCredits();
 }
 
 /////////////////////

@@ -24,4 +24,13 @@ class ACTIONROGUELIKE_API IAR_IGameplayInterface
 public:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void Interact(APawn* InstigatorPawn);
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	bool ReceiveCredits(int32 CreditsReceived);
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	bool SpendCredits(int32 CreditsCost);
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	int32 GetCreditsValue();
 };

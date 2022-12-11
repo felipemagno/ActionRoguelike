@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Interfaces/AR_IGameplayInterface.h"
 #include "AR_AICharacter.generated.h"
 
 
@@ -11,7 +12,7 @@ class UAR_WorldUserWidget;
 class UPawnSensingComponent;
 class UAR_AttributeComponent;
 UCLASS()
-class ACTIONROGUELIKE_API AAR_AICharacter : public ACharacter
+class ACTIONROGUELIKE_API AAR_AICharacter : public ACharacter, public IAR_IGameplayInterface
 {
 	GENERATED_BODY()
 
@@ -49,22 +50,25 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
 	float RagdollDuration;
-	
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enemy Info")
+	int32 CreditsValue;
+
+	void SetTargetActor(AActor* Actor);
+	virtual void PostInitializeComponents() override;
+
+	// EVENT RESPONSES
 	UFUNCTION()
 	void SightResponse(APawn* Pawn);
 
-
 	UFUNCTION()
-	void HealthChangedResponse(AActor* InstigatingActor, UAR_AttributeComponent* OwningAttribute, float NewHealthValue, float DeltaValue, float NewHealthPercentage);
-	void SetTargetActor(AActor* Actor);
+	void HealthChangedResponse(AActor* InstigatingActor, UAR_AttributeComponent* OwningAttribute, float NewHealthValue,
+	                           float DeltaValue, float NewHealthPercentage);
 
 	UFUNCTION()
 	void DeathResponse(AActor* InstigatingActor, UAR_AttributeComponent* OwningAttribute);
+public:
 	
-	virtual void PostInitializeComponents() override;
+	//GAMEPLAY INTERFACE
+	virtual int32 GetCreditsValue_Implementation() override;
 };
-
-
-
-

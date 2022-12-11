@@ -4,7 +4,9 @@
 #include "Core/AR_GameMode.h"
 
 #include "AR_Player.h"
+#include "Core/AR_PlayerState.h"
 #include "EnvironmentQuery/EnvQueryManager.h"
+#include "Interfaces/AR_IGameplayInterface.h"
 
 static TAutoConsoleVariable<bool> CVarSpawnBots(TEXT("ar_Spawnbots"), true,TEXT("Enable spawning of bots via timer."),
                                                 ECVF_Cheat);
@@ -27,7 +29,7 @@ void AAR_GameMode::SpawnBotTimerElapsed()
 {
 	if (!CVarSpawnBots.GetValueOnGameThread())
 	{
-		UE_LOG(LogTemp,Log,TEXT("Spawn bot disabled by ar.Spawnbots"))
+		UE_LOG(LogTemp, Log, TEXT("Spawn bot disabled by ar.Spawnbots"))
 		return;
 	}
 
@@ -35,11 +37,11 @@ void AAR_GameMode::SpawnBotTimerElapsed()
 		this, SpawnBotQuery, this, EEnvQueryRunMode::RandomBest5Pct, nullptr);
 
 	if (ensure(EQSWrapper))
-		EQSWrapper->GetOnQueryFinishedEvent().AddDynamic(this, &AAR_GameMode::OnSpawnEQSFinished);
+		EQSWrapper->GetOnQueryFinishedEvent().AddDynamic(this, &AAR_GameMode::SpawnEQSFinishedEvent);
 }
 
-void AAR_GameMode::OnSpawnEQSFinished(UEnvQueryInstanceBlueprintWrapper* QueryInstance,
-                                      EEnvQueryStatus::Type QueryStatus)
+void AAR_GameMode::SpawnEQSFinishedEvent(UEnvQueryInstanceBlueprintWrapper* QueryInstance,
+                                         EEnvQueryStatus::Type QueryStatus)
 {
 	if (QueryStatus != EEnvQueryStatus::Success)
 	{
@@ -81,7 +83,7 @@ void AAR_GameMode::RespawnPlayerElapsed(AController* Controller)
 	}
 }
 
-void AAR_GameMode::OnActorKilled(AActor* VictimActor, AActor* KillerActor)
+void AAR_GameMode::ActorKilledEvent(AActor* VictimActor, AActor* KillerActor)
 {
 	auto* Player = Cast<AAR_Player>(VictimActor);
 	if (Player)
@@ -92,6 +94,16 @@ void AAR_GameMode::OnActorKilled(AActor* VictimActor, AActor* KillerActor)
 
 		GetWorldTimerManager().SetTimer(TimerHandle_RespawnDelay, Delegate, 2.0f, false);
 	}
+
+	// Get Credits value from enemy and give it to player
+	if (KillerActor->Implements<UAR_IGameplayInterface>() && VictimActor->Implements<UAR_IGameplayInterface>())
+	{
+		const int32 Credits = IAR_IGameplayInterface::Execute_GetCreditsValue(VictimActor);
+		IAR_IGameplayInterface::Execute_ReceiveCredits(KillerActor, Credits);
+	}
+
+	OnActorKilled.Broadcast(VictimActor, KillerActor);
+
 
 	UE_LOG(LogTemp, Log, TEXT("OnActorKilled: Victim: %s, Killer: %s"), *GetNameSafe(VictimActor),
 	       *GetNameSafe(KillerActor));

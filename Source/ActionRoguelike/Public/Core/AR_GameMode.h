@@ -11,6 +11,7 @@ class UEnvQuery;
 class UEnvQueryInstanceBlueprintWrapper;
 class AController;
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnActorKilled, AActor*, VictimActor, AActor*, KillerActor);
 /**
  * 
  */
@@ -46,7 +47,7 @@ protected:
 
 	// FUNCTIONS
 	UFUNCTION()
-	void OnSpawnEQSFinished(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus);
+	void SpawnEQSFinishedEvent(UEnvQueryInstanceBlueprintWrapper* QueryInstance, EEnvQueryStatus::Type QueryStatus);
 
 	UFUNCTION()
 	void SpawnBotTimerElapsed();
@@ -57,8 +58,11 @@ protected:
 public:
 	AAR_GameMode();
 
+	UPROPERTY(BlueprintAssignable)
+	FOnActorKilled OnActorKilled;
+	
 	UFUNCTION()
-	virtual void OnActorKilled(AActor* VictimActor, AActor* KillerActor);
+	virtual void ActorKilledEvent(AActor* VictimActor, AActor* KillerActor);
 
 	virtual void StartPlay() override;
 };

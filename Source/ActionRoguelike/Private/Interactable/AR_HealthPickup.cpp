@@ -11,6 +11,7 @@ AAR_HealthPickup::AAR_HealthPickup()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	CreditsValue = 5;
 }
 
 // Called when the game starts or when spawned
@@ -21,15 +22,20 @@ void AAR_HealthPickup::BeginPlay()
 
 bool AAR_HealthPickup::PickupBehavior(APawn* InstigatorPawn)
 {
-	Super::PickupBehavior(InstigatorPawn);
-
-	UAR_AttributeComponent* Attribute = Cast<UAR_AttributeComponent>(
-		InstigatorPawn->GetComponentByClass(UAR_AttributeComponent::StaticClass()));
-	if (Attribute && !Attribute->IsFullHealth())
+	// Only executes if the Instigator can spend the CreditsValue for this Pickup
+	if (InstigatorPawn->Implements<UAR_IGameplayInterface>() &&
+		IAR_IGameplayInterface::Execute_SpendCredits(InstigatorPawn, CreditsValue))
 	{
-		Attribute->ApplyHealthChange(this, 15);
-		return true;
+		Super::PickupBehavior(InstigatorPawn);
+		UAR_AttributeComponent* Attribute = Cast<UAR_AttributeComponent>(
+			InstigatorPawn->GetComponentByClass(UAR_AttributeComponent::StaticClass()));
+		if (Attribute && !Attribute->IsFullHealth())
+		{
+			Attribute->ApplyHealthChange(this, 15);
+			return true;
+		}
 	}
+
 	return false;
 }
 

@@ -54,7 +54,7 @@ bool UAR_AttributeComponent::ApplyHealthChange(AActor* InstigatingActor, float D
 		OnDeath.Broadcast(InstigatingActor, this);
 		auto* GM = GetWorld()->GetAuthGameMode<AAR_GameMode>();
 		if (GM)
-			GM->OnActorKilled(GetOwner(), InstigatingActor);
+			GM->ActorKilledEvent(GetOwner(), InstigatingActor);
 	}
 
 	return true;

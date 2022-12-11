@@ -28,6 +28,7 @@ AAR_AICharacter::AAR_AICharacter()
 	HitFlashtime_ParameterName = "HitFlashTime";
 
 	RagdollDuration = 3.0f;
+	CreditsValue = 3;
 }
 
 void AAR_AICharacter::PostInitializeComponents()
@@ -37,6 +38,11 @@ void AAR_AICharacter::PostInitializeComponents()
 	PawnSensingComponent->OnSeePawn.AddDynamic(this, &AAR_AICharacter::SightResponse);
 	AttributeComponent->OnHealthChanged.AddDynamic(this, &AAR_AICharacter::HealthChangedResponse);
 	AttributeComponent->OnDeath.AddDynamic(this, &AAR_AICharacter::DeathResponse);
+}
+
+int32 AAR_AICharacter::GetCreditsValue_Implementation()
+{
+	return CreditsValue;
 }
 
 void AAR_AICharacter::HealthChangedResponse(AActor* InstigatingActor, UAR_AttributeComponent* OwningAttribute,

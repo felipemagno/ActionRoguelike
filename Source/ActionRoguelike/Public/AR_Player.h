@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Interfaces/AR_IGameplayInterface.h"
 #include "Projectile/AR_BaseProjectile.h"
 #include "AR_Player.generated.h"
 
@@ -15,7 +16,7 @@ class AAR_MagicProjectile;
 class UAR_AttributeComponent;
 
 UCLASS(Abstract)
-class ACTIONROGUELIKE_API AAR_Player : public ACharacter
+class ACTIONROGUELIKE_API AAR_Player : public ACharacter, public IAR_IGameplayInterface
 {
 	GENERATED_BODY()
 
@@ -99,4 +100,11 @@ public:
 	virtual void PostInitializeComponents() override;
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	// GAMEPLAY INTERFACE
+	virtual bool SpendCredits_Implementation(int32 CreditsCost) override;
+	virtual bool ReceiveCredits_Implementation(int32 DeltaValue) override;
+	virtual int32 GetCreditsValue_Implementation() override;
 };
+
+
