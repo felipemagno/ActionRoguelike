@@ -6,6 +6,7 @@
 #include "ActorComponent/AR_InteractionComponent.h"
 #include "Projectile/AR_MagicProjectile.h"
 #include "Projects.h"
+#include "ActorComponent/AR_ActionComponent.h"
 #include "ActorComponent/AR_AttributeComponent.h"
 #include "Camera/CameraComponent.h"
 #include "Core/AR_PlayerState.h"
@@ -33,6 +34,7 @@ AAR_Player::AAR_Player()
 
 	InteractionComp = CreateDefaultSubobject<UAR_InteractionComponent>("InteractionComponent");
 	AttributeComp = CreateDefaultSubobject<UAR_AttributeComponent>("AttributeComponent");
+	ActionComponent = CreateDefaultSubobject<UAR_ActionComponent>("ActionComponent");
 
 	HitFlashTime_ParameterName = "HitTime";
 }
@@ -53,6 +55,9 @@ void AAR_Player::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &AAR_Player::PrimaryInteract);
 	PlayerInputComponent->BindAction("SpecialAttack", IE_Pressed, this, &AAR_Player::SpecialAttack);
 	PlayerInputComponent->BindAction("SpecialAbility", IE_Pressed, this, &AAR_Player::SpecialAbility);
+
+	PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &AAR_Player::SprintStart);
+	PlayerInputComponent->BindAction("Sprint", IE_Released, this, &AAR_Player::SprintStop);
 }
 
 /////////////////////
@@ -264,4 +269,14 @@ void AAR_Player::SpecialAbility()
 	PlayAnimMontage(AttackAnimation);
 
 	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &AAR_Player::ExecuteSpecialAbility, 0.17f);
+}
+
+void AAR_Player::SprintStart()
+{
+	ActionComponent->StartAction(this,"Sprint");
+}
+
+void AAR_Player::SprintStop()
+{
+	ActionComponent->StopAction(this,"Sprint");
 }

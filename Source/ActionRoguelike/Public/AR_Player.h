@@ -14,6 +14,7 @@ class UAR_InteractionComponent;
 class UAnimMontage;
 class AAR_MagicProjectile;
 class UAR_AttributeComponent;
+class UAR_ActionComponent;
 
 UCLASS(Abstract)
 class ACTIONROGUELIKE_API AAR_Player : public ACharacter, public IAR_IGameplayInterface
@@ -34,8 +35,11 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	UAR_InteractionComponent* InteractionComp;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
 	UAR_AttributeComponent* AttributeComp;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
+	UAR_ActionComponent* ActionComponent;
 
 	UPROPERTY(EditAnywhere, Category = "Attack")
 	TSubclassOf<AAR_BaseProjectile> ProjectileClass;
@@ -77,6 +81,8 @@ public:
 	void SpecialAttack();
 	void ExecuteSpecialAbility();
 	void SpecialAbility();
+	void SprintStart();
+	void SprintStop();
 
 	// HELPER
 	AAR_BaseProjectile* SpawnProjectile(TSubclassOf<AAR_BaseProjectile> Projectile);
