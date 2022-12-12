@@ -15,6 +15,7 @@ class UAnimMontage;
 class AAR_MagicProjectile;
 class UAR_AttributeComponent;
 class UAR_ActionComponent;
+class UAR_BaseAction;
 
 UCLASS(Abstract)
 class ACTIONROGUELIKE_API AAR_Player : public ACharacter, public IAR_IGameplayInterface
@@ -41,65 +42,37 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
 	UAR_ActionComponent* ActionComponent;
 
-	UPROPERTY(EditAnywhere, Category = "Attack")
-	TSubclassOf<AAR_BaseProjectile> ProjectileClass;
-
-	UPROPERTY(EditAnywhere, Category = "Attack")
-	TSubclassOf<AAR_BaseProjectile> SpecialAttackProjectileClass;
-
-	UPROPERTY(EditAnywhere, Category = "Attack")
-	TSubclassOf<AAR_BaseProjectile> SpecialAbilityProjectileClass;
-
-	UPROPERTY(EditAnywhere, Category = "Attack")
-	UAnimMontage* AttackAnimation;
-
-	UPROPERTY(EditAnywhere, Category = "Attack")
-	FName ProjectileSpawnSocket = "Muzzle_01";
-
-	UPROPERTY(EditAnywhere, Category = "Attack")
-	FTimerHandle TimerHandle_PrimaryAttack;
-
 	UPROPERTY(EditAnywhere, Category = "Effects")
 	FName HitFlashTime_ParameterName;
 
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
-
 public:
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
-
 	// MOVEMENT
 	void MoveForward(float value);
 	void MoveRight(float value);
 
 	// ACTIONS
-	void ExecutePrimaryAttack();
 	void PrimaryAttack();
 	void PrimaryInteract();
-	void ExecuteSpecialAttack();
 	void SpecialAttack();
-	void ExecuteSpecialAbility();
 	void SpecialAbility();
 	void SprintStart();
 	void SprintStop();
 
 	// HELPER
-	AAR_BaseProjectile* SpawnProjectile(TSubclassOf<AAR_BaseProjectile> Projectile);
-	FRotator GetRotationToView(FVector SpawnLocation);
 	virtual void GetActorEyesViewPoint(FVector& OutLocation, FRotator& OutRotation) const override;
 
+	// EVENTS
 	UFUNCTION()
 	void Death(AActor* InstigatingActor, UAR_AttributeComponent* OwningAttribute);
 	UFUNCTION()
 	void HealthChanged(AActor* InstigatingActor, UAR_AttributeComponent* OwningAttribute, float NewHealthValue,
 	                   float DeltaValue, float NewHealthPercentage);
-	
+
 	// CONSOLE COMMANDS
-	UFUNCTION(Exec,meta=(DevelopmentOnly))
+	UFUNCTION(Exec, meta=(DevelopmentOnly))
 	void AR_HealSelf(float Ammount = 100);
 
-	UFUNCTION(Exec,meta=(DevelopmentOnly))
+	UFUNCTION(Exec, meta=(DevelopmentOnly))
 	void AR_ToggleGodMode();
 
 	// OVERRIDES
@@ -112,5 +85,3 @@ public:
 	virtual bool ReceiveCredits_Implementation(int32 DeltaValue) override;
 	virtual int32 GetCreditsValue_Implementation() override;
 };
-
-

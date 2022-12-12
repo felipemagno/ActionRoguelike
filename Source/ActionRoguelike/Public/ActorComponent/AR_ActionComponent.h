@@ -6,7 +6,7 @@
 #include "Components/ActorComponent.h"
 #include "AR_ActionComponent.generated.h"
 
-class UAR_ActionObject;
+class UAR_BaseAction;
 
 UCLASS(ClassGroup=(ActionRoguelike), meta=(BlueprintSpawnableComponent))
 class ACTIONROGUELIKE_API UAR_ActionComponent : public UActorComponent
@@ -18,7 +18,7 @@ public:
 	UAR_ActionComponent();
 
 	UFUNCTION(BlueprintCallable, Category="Action")
-	void AddAction(TSubclassOf<UAR_ActionObject> NewAction);
+	void AddAction(TSubclassOf<UAR_BaseAction> NewAction);
 
 	UFUNCTION(BlueprintCallable, Category="Action")
 	bool StartAction(AActor* Instigator, FName ActionName);
@@ -28,13 +28,21 @@ public:
 
 protected:
 	UPROPERTY()
-	TArray<UAR_ActionObject*> Actions;
+	TArray<UAR_BaseAction*> Actions;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Action")
+	TArray<TSubclassOf<UAR_BaseAction>> DefaultActions;
 
 	// Called when the game starts
 	virtual void BeginPlay() override;
+
+	FName CurrentAction;
 
 public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 	                           FActorComponentTickFunction* ThisTickFunction) override;
+
+	UFUNCTION(BlueprintGetter)
+	FName GetCurrentAction();
 };

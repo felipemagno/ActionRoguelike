@@ -4,14 +4,14 @@
 
 #include "CoreMinimal.h"
 #include "UObject/NoExportTypes.h"
-#include "AR_ActionObject.generated.h"
+#include "AR_BaseAction.generated.h"
 
 
 /**
  * 
  */
 UCLASS(Abstract,Blueprintable)
-class ACTIONROGUELIKE_API UAR_ActionObject : public UObject
+class ACTIONROGUELIKE_API UAR_BaseAction : public UObject
 {
 	GENERATED_BODY()
 
@@ -26,4 +26,6 @@ public:
 	// Action nick name to start without object reference
 	UPROPERTY(EditDefaultsOnly, Category = "Action")
 	FName ActionName;
+
+	virtual UWorld* GetWorld() const override;
 };

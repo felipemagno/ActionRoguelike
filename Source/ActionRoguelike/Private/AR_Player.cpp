@@ -4,7 +4,6 @@
 #include "AR_Player.h"
 
 #include "ActorComponent/AR_InteractionComponent.h"
-#include "Projectile/AR_MagicProjectile.h"
 #include "Projects.h"
 #include "ActorComponent/AR_ActionComponent.h"
 #include "ActorComponent/AR_AttributeComponent.h"
@@ -63,18 +62,6 @@ void AAR_Player::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 /////////////////////
 // UNREAL FUNCTIONS
 
-// Called when the game starts or when spawned
-void AAR_Player::BeginPlay()
-{
-	Super::BeginPlay();
-}
-
-// Called every frame
-void AAR_Player::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-}
-
 void AAR_Player::PostInitializeComponents()
 {
 	Super::PostInitializeComponents();
@@ -103,7 +90,7 @@ void AAR_Player::Death(AActor* InstigatingActor, UAR_AttributeComponent* OwningA
 }
 
 void AAR_Player::HealthChanged(AActor* InstigatingActor, UAR_AttributeComponent* OwningAttribute,
-                                  float NewHealthValue, float DeltaValue, float NewHealthPercentage)
+                               float NewHealthValue, float DeltaValue, float NewHealthPercentage)
 {
 	if (!OwningAttribute->IsAlive())
 	{
@@ -126,50 +113,6 @@ void AAR_Player::AR_ToggleGodMode()
 		AttributeComp->ToogleGodMode();
 }
 
-
-/////////////////////
-// HELPER FUNCTIONS
-
-AAR_BaseProjectile* AAR_Player::SpawnProjectile(TSubclassOf<AAR_BaseProjectile> Projectile)
-{
-	if (!ensure(Projectile))
-	{
-		return nullptr;
-	}
-
-	const FVector SpawnLocation = GetMesh()->GetSocketLocation(ProjectileSpawnSocket);
-	const FRotator SpawnRotation = GetRotationToView(SpawnLocation);
-
-	FTransform SpawnTransform = FTransform(SpawnRotation, SpawnLocation);
-	FActorSpawnParameters SpawnParamns;
-	SpawnParamns.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	SpawnParamns.Instigator = this;
-
-	return Cast<AAR_BaseProjectile>(GetWorld()->SpawnActor<AActor>(Projectile, SpawnTransform, SpawnParamns));
-}
-
-FRotator AAR_Player::GetRotationToView(const FVector SpawnLocation)
-{
-	FRotator RotationToView = GetControlRotation();
-
-	FCollisionQueryParams QueryParams;
-	QueryParams.AddIgnoredActor(GetOwner());
-
-	FVector StartLocation = CameraComp->GetComponentLocation();
-	FVector EndLocation = StartLocation + CameraComp->GetForwardVector() * 1000;
-
-	FHitResult Hit;
-	bool bBlockingHit = GetWorld()->LineTraceSingleByChannel(Hit, StartLocation, EndLocation,
-	                                                         ECC_Visibility,
-	                                                         QueryParams);
-	if (bBlockingHit)
-	{
-		EndLocation = Hit.ImpactPoint;
-	}
-	RotationToView = FRotationMatrix::MakeFromX(EndLocation - SpawnLocation).Rotator();
-	return RotationToView;
-}
-
 /////////////////////
 // GAMEPLAY INTERFACE 
 bool AAR_Player::SpendCredits_Implementation(int32 CreditsCost)
@@ -177,27 +120,27 @@ bool AAR_Player::SpendCredits_Implementation(int32 CreditsCost)
 	AAR_PlayerState* MyPlayerState = Cast<AAR_PlayerState>(GetPlayerState());
 	if (ensure(MyPlayerState))
 	{
-		return MyPlayerState->UpdateCredits(-CreditsCost);	
-	}else
+		return MyPlayerState->UpdateCredits(-CreditsCost);
+	}
+	else
 	{
-		UE_LOG(LogTemp,Warning,TEXT("%s is not subclass of AAR_PlayerState"),GetPlayerState());
+		UE_LOG(LogTemp, Warning, TEXT("%s is not subclass of AAR_PlayerState"), GetPlayerState());
 		return false;
 	}
 }
 
 bool AAR_Player::ReceiveCredits_Implementation(int32 CreditsReceived)
 {
-	
 	AAR_PlayerState* MyPlayerState = Cast<AAR_PlayerState>(GetPlayerState());
 	if (ensure(MyPlayerState))
 	{
-		return MyPlayerState->UpdateCredits(CreditsReceived);	
-	}else
+		return MyPlayerState->UpdateCredits(CreditsReceived);
+	}
+	else
 	{
-		UE_LOG(LogTemp,Warning,TEXT("%s is not subclass of AAR_PlayerState"),GetPlayerState());
+		UE_LOG(LogTemp, Warning, TEXT("%s is not subclass of AAR_PlayerState"), GetPlayerState());
 		return false;
 	}
-	
 }
 
 int32 AAR_Player::GetCreditsValue_Implementation()
@@ -227,16 +170,9 @@ void AAR_Player::MoveRight(float value)
 	AddMovementInput(FRotationMatrix(ControlRot).GetScaledAxis(EAxis::Y), value);
 }
 
-void AAR_Player::ExecutePrimaryAttack()
-{
-	SpawnProjectile(ProjectileClass);
-}
-
 void AAR_Player::PrimaryAttack()
 {
-	PlayAnimMontage(AttackAnimation);
-
-	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &AAR_Player::ExecutePrimaryAttack, 0.17f);
+	ActionComponent->StartAction(this, "PrimaryAttack");
 }
 
 void AAR_Player::PrimaryInteract()
@@ -247,36 +183,22 @@ void AAR_Player::PrimaryInteract()
 	}
 }
 
-void AAR_Player::ExecuteSpecialAttack()
-{
-	SpawnProjectile(SpecialAttackProjectileClass);
-}
-
 void AAR_Player::SpecialAttack()
 {
-	PlayAnimMontage(AttackAnimation);
-
-	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &AAR_Player::ExecuteSpecialAttack, 0.17f);
-}
-
-void AAR_Player::ExecuteSpecialAbility()
-{
-	SpawnProjectile(SpecialAbilityProjectileClass);
+	ActionComponent->StartAction(this, "BlackHole");
 }
 
 void AAR_Player::SpecialAbility()
 {
-	PlayAnimMontage(AttackAnimation);
-
-	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &AAR_Player::ExecuteSpecialAbility, 0.17f);
+	ActionComponent->StartAction(this, "Dash");
 }
 
 void AAR_Player::SprintStart()
 {
-	ActionComponent->StartAction(this,"Sprint");
+	ActionComponent->StartAction(this, "Sprint");
 }
 
 void AAR_Player::SprintStop()
 {
-	ActionComponent->StopAction(this,"Sprint");
+	ActionComponent->StopAction(this, "Sprint");
 }

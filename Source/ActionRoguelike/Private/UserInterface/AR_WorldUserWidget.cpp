@@ -22,7 +22,7 @@ void UAR_WorldUserWidget::NativeTick(const FGeometry& MyGeometry, float InDeltaT
 	}
 	else
 	{
-		RemoveFromViewport();
+		RemoveFromParent();
 		UE_LOG(LogTemp, Warning, TEXT("Attached Actor no Longer Valid, removing Enemy Health Widget"));
 	}
 }
