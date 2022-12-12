@@ -34,6 +34,8 @@ void UAR_ActionComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// ...
+	FString DebugText = GetNameSafe(GetOwner()) + " : " + ActiveGameplayTags.ToStringSimple();
+	GEngine->AddOnScreenDebugMessage(-1, 0, FColor::White, DebugText);
 }
 
 FName UAR_ActionComponent::GetCurrentAction()
@@ -53,11 +55,18 @@ void UAR_ActionComponent::AddAction(TSubclassOf<UAR_BaseAction> NewAction)
 }
 
 bool UAR_ActionComponent::StartAction(AActor* Instigator, FName ActionName)
-{	
+{
 	for (UAR_BaseAction* Action : Actions)
 	{
 		if (Action && Action->ActionName == ActionName)
 		{
+			if (!Action->CanStartAction(Instigator))
+			{
+				FString FailedMsg = FString::Printf(TEXT("Failed to run: %s"), *ActionName.ToString());
+				GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Red, FailedMsg);
+				continue;
+			}
+
 			Action->StartAction(GetOwner());
 			CurrentAction = Action->ActionName;
 			return true;
@@ -70,7 +79,7 @@ bool UAR_ActionComponent::StopAction(AActor* Instigator, FName ActionName)
 {
 	for (UAR_BaseAction* Action : Actions)
 	{
-		if (Action && Action->ActionName == ActionName)
+		if (Action && Action->ActionName == ActionName && Action->IsRunning())
 		{
 			Action->StopAction(GetOwner());
 			CurrentAction = "None";

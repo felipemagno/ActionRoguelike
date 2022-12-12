@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "Components/ActorComponent.h"
 #include "AR_ActionComponent.generated.h"
 
@@ -16,6 +17,9 @@ class ACTIONROGUELIKE_API UAR_ActionComponent : public UActorComponent
 public:
 	// Sets default values for this component's properties
 	UAR_ActionComponent();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category= "Tags")
+	FGameplayTagContainer ActiveGameplayTags;
 
 	UFUNCTION(BlueprintCallable, Category="Action")
 	void AddAction(TSubclassOf<UAR_BaseAction> NewAction);
