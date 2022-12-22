@@ -3,8 +3,11 @@
 
 #include "AR_Player.h"
 
+#include "EnhancedInputComponent.h"
 #include "ActorComponent/AR_InteractionComponent.h"
 #include "Projects.h"
+
+#include "EnhancedInput/Public/InputAction.h"
 #include "ActorComponent/AR_ActionComponent.h"
 #include "ActorComponent/AR_AttributeComponent.h"
 #include "Camera/CameraComponent.h"
@@ -43,20 +46,55 @@ void AAR_Player::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	PlayerInputComponent->BindAxis("MoveForward", this, &AAR_Player::MoveForward);
-	PlayerInputComponent->BindAxis("MoveRight", this, &AAR_Player::MoveRight);
+	UEnhancedInputComponent* EnhancedInput = Cast<UEnhancedInputComponent>(PlayerInputComponent);
+	check(EnhancedInput);
 
-	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
-	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
+	if (Input_MoveForward)
+		EnhancedInput->BindAction(Input_MoveForward, ETriggerEvent::Triggered, this, &AAR_Player::MoveForward);
+	if (Input_MoveRight)
+		EnhancedInput->BindAction(Input_MoveRight, ETriggerEvent::Triggered, this, &AAR_Player::MoveRight);
 
-	PlayerInputComponent->BindAction("PrimaryAttack", IE_Pressed, this, &AAR_Player::PrimaryAttack);
-	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &AAR_Player::Jump);
-	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &AAR_Player::PrimaryInteract);
-	PlayerInputComponent->BindAction("SpecialAttack", IE_Pressed, this, &AAR_Player::SpecialAttack);
-	PlayerInputComponent->BindAction("SpecialAbility", IE_Pressed, this, &AAR_Player::SpecialAbility);
+	if (Input_Sprint)
+	{
+		EnhancedInput->BindAction(Input_Sprint, ETriggerEvent::Started, this, &AAR_Player::SprintStart);
+		EnhancedInput->BindAction(Input_Sprint, ETriggerEvent::Completed, this, &AAR_Player::SprintStop);
+	}
+	if (Input_Jump)
+	{
+		EnhancedInput->BindAction(Input_Jump, ETriggerEvent::Started, this, &AAR_Player::Jump);
+		EnhancedInput->BindAction(Input_Jump, ETriggerEvent::Completed, this, &AAR_Player::StopJumping);
+	}
 
-	PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &AAR_Player::SprintStart);
-	PlayerInputComponent->BindAction("Sprint", IE_Released, this, &AAR_Player::SprintStop);
+	if (Input_Turn)
+		EnhancedInput->BindAction(Input_Turn, ETriggerEvent::Triggered, this, &AAR_Player::Turn);
+	if (Input_LookUp)
+		EnhancedInput->BindAction(Input_LookUp, ETriggerEvent::Triggered, this, &AAR_Player::LookUp);
+
+	if (Input_PrimaryAttack)
+		EnhancedInput->BindAction(Input_PrimaryAttack, ETriggerEvent::Triggered, this, &AAR_Player::PrimaryAttack);
+	if (Input_SecondaryAttack)
+		EnhancedInput->BindAction(Input_SecondaryAttack, ETriggerEvent::Triggered, this, &AAR_Player::SpecialAttack);
+	if (Input_MovementAbility)
+		EnhancedInput->BindAction(Input_MovementAbility, ETriggerEvent::Triggered, this, &AAR_Player::SpecialAbility);
+
+	if (Input_Interact)
+		EnhancedInput->BindAction(Input_Interact, ETriggerEvent::Triggered, this, &AAR_Player::PrimaryInteract);
+
+	// Old Input Handling without Enhanced Input
+	// PlayerInputComponent->BindAxis("MoveForward", this, &AAR_Player::MoveForward);
+	// PlayerInputComponent->BindAxis("MoveRight", this, &AAR_Player::MoveRight);
+	//
+	// PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
+	// PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
+	//
+	// PlayerInputComponent->BindAction("PrimaryAttack", IE_Pressed, this, &AAR_Player::PrimaryAttack);
+	// PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &AAR_Player::Jump);
+	// PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &AAR_Player::PrimaryInteract);
+	// PlayerInputComponent->BindAction("SpecialAttack", IE_Pressed, this, &AAR_Player::SpecialAttack);
+	// PlayerInputComponent->BindAction("SpecialAbility", IE_Pressed, this, &AAR_Player::SpecialAbility);
+	//
+	// PlayerInputComponent->BindAction("Sprint", IE_Pressed, this, &AAR_Player::SprintStart);
+	// PlayerInputComponent->BindAction("Sprint", IE_Released, this, &AAR_Player::SprintStop);
 }
 
 /////////////////////
@@ -69,6 +107,7 @@ void AAR_Player::PostInitializeComponents()
 	AttributeComp->OnDeath.AddDynamic(this, &AAR_Player::Death);
 	AttributeComp->OnHealthChanged.AddDynamic(this, &AAR_Player::HealthChanged);
 }
+
 
 void AAR_Player::GetActorEyesViewPoint(FVector& OutLocation, FRotator& OutRotation) const
 {
@@ -152,30 +191,40 @@ int32 AAR_Player::GetCreditsValue_Implementation()
 /////////////////////
 // PLAYER ACTIONS
 
-void AAR_Player::MoveForward(float value)
+void AAR_Player::MoveForward(const FInputActionValue& InputActionValue)
 {
 	FRotator ControlRot = GetControlRotation();
 	ControlRot.Pitch = 0;
 	ControlRot.Roll = 0;
 
-	AddMovementInput(ControlRot.Vector(), value);
+	AddMovementInput(ControlRot.Vector(), InputActionValue.Get<float>());
 }
 
-void AAR_Player::MoveRight(float value)
+void AAR_Player::MoveRight(const FInputActionValue& InputActionValue)
 {
 	FRotator ControlRot = GetControlRotation();
 	ControlRot.Pitch = 0;
 	ControlRot.Roll = 0;
 
-	AddMovementInput(FRotationMatrix(ControlRot).GetScaledAxis(EAxis::Y), value);
+	AddMovementInput(FRotationMatrix(ControlRot).GetScaledAxis(EAxis::Y), InputActionValue.Get<float>());
 }
 
-void AAR_Player::PrimaryAttack()
+void AAR_Player::Turn(const FInputActionValue& InputActionValue)
 {
-	ActionComponent->StartAction(this, "PrimaryAttack");
+	AddControllerYawInput(InputActionValue.Get<float>());
 }
 
-void AAR_Player::PrimaryInteract()
+void AAR_Player::LookUp(const FInputActionValue& InputActionValue)
+{
+	AddControllerPitchInput(InputActionValue.Get<float>());
+}
+
+void AAR_Player::PrimaryAttack(const FInputActionValue& InputActionValue)
+{
+	ActionComponent->StartAction(this, GameTag_PrimaryAttack);
+}
+
+void AAR_Player::PrimaryInteract(const FInputActionValue& InputActionValue)
 {
 	if (InteractionComp)
 	{
@@ -183,22 +232,22 @@ void AAR_Player::PrimaryInteract()
 	}
 }
 
-void AAR_Player::SpecialAttack()
+void AAR_Player::SpecialAttack(const FInputActionValue& InputActionValue)
 {
-	ActionComponent->StartAction(this, "BlackHole");
+	ActionComponent->StartAction(this, GameTag_SpecialAttack);
 }
 
-void AAR_Player::SpecialAbility()
+void AAR_Player::SpecialAbility(const FInputActionValue& InputActionValue)
 {
-	ActionComponent->StartAction(this, "Dash");
+	ActionComponent->StartAction(this, GameTag_MovementAbility);
 }
 
-void AAR_Player::SprintStart()
+void AAR_Player::SprintStart(const FInputActionValue& InputActionValue)
 {
-	ActionComponent->StartAction(this, "Sprint");
+	ActionComponent->StartAction(this, GameTag_Sprint);
 }
 
-void AAR_Player::SprintStop()
+void AAR_Player::SprintStop(const FInputActionValue& InputActionValue)
 {
-	ActionComponent->StopAction(this, "Sprint");
+	ActionComponent->StopAction(this, GameTag_Sprint);
 }

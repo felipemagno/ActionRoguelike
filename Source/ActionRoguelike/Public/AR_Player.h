@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "InputActionValue.h"
 #include "GameFramework/Character.h"
 #include "Interfaces/AR_IGameplayInterface.h"
 #include "Projectile/AR_BaseProjectile.h"
@@ -16,6 +17,9 @@ class AAR_MagicProjectile;
 class UAR_AttributeComponent;
 class UAR_ActionComponent;
 class UAR_BaseAction;
+class UInputAction;
+
+
 
 UCLASS(Abstract)
 class ACTIONROGUELIKE_API AAR_Player : public ACharacter, public IAR_IGameplayInterface
@@ -45,18 +49,64 @@ protected:
 	UPROPERTY(EditAnywhere, Category = "Effects")
 	FName HitFlashTime_ParameterName;
 
+	UPROPERTY(EditDefaultsOnly, Category = "Tags")
+	FGameplayTag GameTag_PrimaryAttack;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Tags")
+	FGameplayTag GameTag_SpecialAttack;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Tags")
+	FGameplayTag GameTag_MovementAbility;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Tags")
+	FGameplayTag GameTag_Sprint;
+
+protected:
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Input")
+	UInputAction* Input_MoveForward;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Input")
+	UInputAction* Input_MoveRight;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Input")
+	UInputAction* Input_LookUp;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Input")
+	UInputAction* Input_Turn;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Input")
+	UInputAction* Input_PrimaryAttack;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Input")
+	UInputAction* Input_SecondaryAttack;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Input")
+	UInputAction* Input_Interact;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Input")
+	UInputAction* Input_MovementAbility;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Input")
+	UInputAction* Input_Jump;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Input")
+	UInputAction* Input_Sprint;
 public:
 	// MOVEMENT
-	void MoveForward(float value);
-	void MoveRight(float value);
+	void MoveForward(const FInputActionValue& InputActionValue);
+	void MoveRight(const FInputActionValue& InputActionValue);
+
+	// LOOK ROTATIONS
+	void Turn(const FInputActionValue& InputActionValue);
+	void LookUp(const FInputActionValue& InputActionValue);
 
 	// ACTIONS
-	void PrimaryAttack();
-	void PrimaryInteract();
-	void SpecialAttack();
-	void SpecialAbility();
-	void SprintStart();
-	void SprintStop();
+	void PrimaryAttack(const FInputActionValue& InputActionValue);
+	void PrimaryInteract(const FInputActionValue& InputActionValue);
+	void SpecialAttack(const FInputActionValue& InputActionValue);
+	void SpecialAbility(const FInputActionValue& InputActionValue);
+	void SprintStart(const FInputActionValue& InputActionValue);
+	void SprintStop(const FInputActionValue& InputActionValue);
 
 	// HELPER
 	virtual void GetActorEyesViewPoint(FVector& OutLocation, FRotator& OutRotation) const override;

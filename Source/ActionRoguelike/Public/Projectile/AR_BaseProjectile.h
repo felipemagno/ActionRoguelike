@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "GameFramework/Actor.h"
 #include "AR_BaseProjectile.generated.h"
 
@@ -18,6 +19,10 @@ class ACTIONROGUELIKE_API AAR_BaseProjectile : public AActor
 public:
 	// Sets default values for this actor's properties
 	AAR_BaseProjectile();
+
+	// Gameplay Tag associated with the Parry mechanic
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category="Projectile")
+	FGameplayTag ParryTag;
 
 protected:
 	// COMPONENTS

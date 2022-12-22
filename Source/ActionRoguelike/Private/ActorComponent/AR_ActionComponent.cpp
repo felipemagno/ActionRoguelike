@@ -12,7 +12,7 @@ UAR_ActionComponent::UAR_ActionComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
-	CurrentAction = "None";
+	CurrentAction = FGameplayTag::EmptyTag;
 }
 
 // Called when the game starts
@@ -38,7 +38,7 @@ void UAR_ActionComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	GEngine->AddOnScreenDebugMessage(-1, 0, FColor::White, DebugText);
 }
 
-FName UAR_ActionComponent::GetCurrentAction()
+FGameplayTag UAR_ActionComponent::GetCurrentAction()
 {
 	return CurrentAction;
 }
@@ -54,35 +54,35 @@ void UAR_ActionComponent::AddAction(TSubclassOf<UAR_BaseAction> NewAction)
 	}
 }
 
-bool UAR_ActionComponent::StartAction(AActor* Instigator, FName ActionName)
+bool UAR_ActionComponent::StartAction(AActor* Instigator, FGameplayTag ActionTag)
 {
 	for (UAR_BaseAction* Action : Actions)
 	{
-		if (Action && Action->ActionName == ActionName)
+		if (Action && Action->ActionTag == ActionTag)
 		{
 			if (!Action->CanStartAction(Instigator))
 			{
-				FString FailedMsg = FString::Printf(TEXT("Failed to run: %s"), *ActionName.ToString());
+				FString FailedMsg = FString::Printf(TEXT("Failed to run: %s"), *ActionTag.ToString());
 				GEngine->AddOnScreenDebugMessage(-1, 2, FColor::Red, FailedMsg);
 				continue;
 			}
 
 			Action->StartAction(GetOwner());
-			CurrentAction = Action->ActionName;
+			CurrentAction = Action->ActionTag;
 			return true;
 		}
 	}
 	return false;
 }
 
-bool UAR_ActionComponent::StopAction(AActor* Instigator, FName ActionName)
+bool UAR_ActionComponent::StopAction(AActor* Instigator, FGameplayTag ActionTag)
 {
 	for (UAR_BaseAction* Action : Actions)
 	{
-		if (Action && Action->ActionName == ActionName && Action->IsRunning())
+		if (Action && Action->ActionTag == ActionTag && Action->IsRunning())
 		{
 			Action->StopAction(GetOwner());
-			CurrentAction = "None";
+			CurrentAction = FGameplayTag::EmptyTag;
 			return true;
 		}
 	}

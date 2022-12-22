@@ -25,10 +25,10 @@ public:
 	void AddAction(TSubclassOf<UAR_BaseAction> NewAction);
 
 	UFUNCTION(BlueprintCallable, Category="Action")
-	bool StartAction(AActor* Instigator, FName ActionName);
+	bool StartAction(AActor* Instigator, FGameplayTag ActionTag);
 
 	UFUNCTION(BlueprintCallable, Category="Action")
-	bool StopAction(AActor* Instigator, FName ActionName);
+	bool StopAction(AActor* Instigator, FGameplayTag ActionTag);
 
 protected:
 	UPROPERTY()
@@ -40,7 +40,7 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-	FName CurrentAction;
+	FGameplayTag CurrentAction;
 
 public:
 	// Called every frame
@@ -48,5 +48,5 @@ public:
 	                           FActorComponentTickFunction* ThisTickFunction) override;
 
 	UFUNCTION(BlueprintGetter)
-	FName GetCurrentAction();
+	FGameplayTag GetCurrentAction();
 };

@@ -11,6 +11,8 @@
 class UAR_WorldUserWidget;
 class UPawnSensingComponent;
 class UAR_AttributeComponent;
+class UAR_ActionComponent;
+
 UCLASS()
 class ACTIONROGUELIKE_API AAR_AICharacter : public ACharacter, public IAR_IGameplayInterface
 {
@@ -26,6 +28,9 @@ protected:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
 	UAR_AttributeComponent* AttributeComponent;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
+	UAR_ActionComponent* ActionComponent;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "AI")
 	FName TargetActorKey;

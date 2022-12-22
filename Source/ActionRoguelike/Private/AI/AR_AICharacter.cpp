@@ -5,6 +5,7 @@
 
 #include "AR_Player.h"
 #include "BrainComponent.h"
+#include "ActorComponent/AR_ActionComponent.h"
 #include "ActorComponent/AR_AttributeComponent.h"
 #include "AI/AR_AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
@@ -20,6 +21,7 @@ AAR_AICharacter::AAR_AICharacter()
 {
 	PawnSensingComponent = CreateDefaultSubobject<UPawnSensingComponent>("PawnSensing");
 	AttributeComponent = CreateDefaultSubobject<UAR_AttributeComponent>("Attributes");
+	ActionComponent = CreateDefaultSubobject<UAR_ActionComponent>("ActionComponent");
 
 	AutoPossessAI = EAutoPossessAI::PlacedInWorldOrSpawned;
 
@@ -54,7 +56,7 @@ void AAR_AICharacter::HealthChangedResponse(AActor* InstigatingActor, UAR_Attrib
 		if (!ActiveHealthBar)
 		{
 			ActiveHealthBar = CreateWidget<UAR_WorldUserWidget>(GetWorld(), HealthBarWidgetClass);
-			
+
 			ActiveHealthBar->AttachedActor = this;
 			ActiveHealthBar->AddToViewport();
 		}
@@ -62,14 +64,14 @@ void AAR_AICharacter::HealthChangedResponse(AActor* InstigatingActor, UAR_Attrib
 		//Update Health and apply UI & UX effects
 		HitFlashtime_ParameterName = "HitFlashTime";
 		GetMesh()->SetScalarParameterValueOnMaterials(HitFlashtime_ParameterName, GetWorld()->TimeSeconds);
-		
-		UAR_WorldUserWidget* DamageText = CreateWidget<UAR_WorldUserWidget>(GetWorld(),DamageTextWidgetClass);
-		if(DamageText->Implements<UAR_IUserInterface>())
+
+		UAR_WorldUserWidget* DamageText = CreateWidget<UAR_WorldUserWidget>(GetWorld(), DamageTextWidgetClass);
+		if (DamageText->Implements<UAR_IUserInterface>())
 		{
 			DamageText->AttachedActor = this;
-			IAR_IUserInterface::Execute_UpdateHealthText(DamageText,DeltaValue);
-			DamageText->AddToViewport();	
-		}		
+			IAR_IUserInterface::Execute_UpdateHealthText(DamageText, DeltaValue);
+			DamageText->AddToViewport();
+		}
 
 		//Update Health on AI
 		AAR_AIController* AiController = GetController<AAR_AIController>();
