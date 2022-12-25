@@ -15,6 +15,8 @@ UCLASS(Abstract, Blueprintable)
 class ACTIONROGUELIKE_API UAR_BaseAction : public UObject
 {
 	GENERATED_BODY()
+public:
+	UAR_BaseAction();
 protected:
 	// Tags granted to owning actor while this Action is being executed
 	UPROPERTY(EditDefaultsOnly, Category="Tags")
@@ -29,7 +31,16 @@ protected:
 	UAR_ActionComponent* GetOwningComponent() const;
 
 	bool bIsRunning;
+	
 public:
+	// Starts automatically when added 
+	UPROPERTY(EditDefaultsOnly, Category="Action")
+	bool AutoStart;
+	
+	// Action tag to start without object reference
+	UPROPERTY(EditDefaultsOnly, Category="Tags")
+	FGameplayTag ActionTag;
+	
 	UFUNCTION(BlueprintGetter, Category= "Action")
 	bool IsRunning() const;
 
@@ -42,9 +53,7 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Action")
 	void StopAction(AActor* Instigator);
 
-	// Action tag to start without object reference
-	UPROPERTY(EditDefaultsOnly, Category="Tags")
-	FGameplayTag ActionTag;
+	
 	
 	virtual UWorld* GetWorld() const override;
 };

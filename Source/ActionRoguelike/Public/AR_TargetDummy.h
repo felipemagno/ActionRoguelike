@@ -7,7 +7,7 @@
 
 class UAR_AttributeComponent;
 
-UCLASS()
+UCLASS(Abstract)
 class ACTIONROGUELIKE_API AAR_TargetDummy : public AActor
 {
 	GENERATED_BODY()

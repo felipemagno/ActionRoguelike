@@ -9,7 +9,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(Abstract)
 class ACTIONROGUELIKE_API UAR_GameInstance : public UGameInstance
 {
 	GENERATED_BODY()

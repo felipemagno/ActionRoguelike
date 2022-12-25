@@ -10,7 +10,7 @@ class UStaticMeshComponent;
 class URadialForceComponent;
 
 
-UCLASS()
+UCLASS(Abstract)
 class ACTIONROGUELIKE_API AAR_ExplosiveBarrel : public AActor
 {
 	GENERATED_BODY()

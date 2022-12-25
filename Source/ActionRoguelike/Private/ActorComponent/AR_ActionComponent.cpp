@@ -22,7 +22,7 @@ void UAR_ActionComponent::BeginPlay()
 
 	for (TSubclassOf<UAR_BaseAction> ActionClass : DefaultActions)
 	{
-		AddAction(ActionClass);
+		AddAction(GetOwner(),ActionClass);
 	}
 }
 
@@ -43,7 +43,7 @@ FGameplayTag UAR_ActionComponent::GetCurrentAction()
 	return CurrentAction;
 }
 
-void UAR_ActionComponent::AddAction(TSubclassOf<UAR_BaseAction> NewAction)
+void UAR_ActionComponent::AddAction(AActor* Instigator, TSubclassOf<UAR_BaseAction> NewAction)
 {
 	if (!ensure(NewAction)) { return; }
 
@@ -51,6 +51,10 @@ void UAR_ActionComponent::AddAction(TSubclassOf<UAR_BaseAction> NewAction)
 	if (ensure(ActionObject))
 	{
 		Actions.Add(ActionObject);
+		if(ActionObject->AutoStart && ensure(ActionObject->CanStartAction(Instigator)))
+		{
+			ActionObject->StartAction(Instigator);
+		}
 	}
 }
 
@@ -87,4 +91,14 @@ bool UAR_ActionComponent::StopAction(AActor* Instigator, FGameplayTag ActionTag)
 		}
 	}
 	return false;
+}
+
+void UAR_ActionComponent::RemoveAction(UAR_BaseAction* ActionToRemove)
+{
+	if (ensure(ActionToRemove && !ActionToRemove->IsRunning()))
+	{
+		return;
+	}
+
+	Actions.Remove(ActionToRemove);
 }

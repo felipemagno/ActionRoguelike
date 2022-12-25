@@ -7,7 +7,7 @@
 #include "GameFramework/Actor.h"
 #include "AR_HealthPickup.generated.h"
 
-UCLASS()
+UCLASS(Abstract)
 class ACTIONROGUELIKE_API AAR_HealthPickup : public AAR_Pickup
 {
 	GENERATED_BODY()

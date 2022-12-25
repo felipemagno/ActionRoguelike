@@ -11,7 +11,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnUpdateCredits, int32, CreditsNewV
 /**
  * 
  */
-UCLASS()
+UCLASS(Abstract)
 class ACTIONROGUELIKE_API AAR_PlayerState : public APlayerState
 {
 	GENERATED_BODY()

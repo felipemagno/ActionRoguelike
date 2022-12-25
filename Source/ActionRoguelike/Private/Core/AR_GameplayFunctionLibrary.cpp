@@ -7,7 +7,7 @@
 
 bool UAR_GameplayFunctionLibrary::ApplyDamage(AActor* DamageInstigator, AActor* TargetActor, float DamageAmount)
 {
-	auto* Attribute = Cast<UAR_AttributeComponent>(
+	UAR_AttributeComponent* Attribute = Cast<UAR_AttributeComponent>(
 		TargetActor->GetComponentByClass(UAR_AttributeComponent::StaticClass()));
 	if (Attribute)
 	{

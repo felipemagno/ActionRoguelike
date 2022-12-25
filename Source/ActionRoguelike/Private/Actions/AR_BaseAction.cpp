@@ -5,6 +5,11 @@
 
 #include "ActorComponent/AR_ActionComponent.h"
 
+UAR_BaseAction::UAR_BaseAction()
+{
+	AutoStart = false;
+}
+
 bool UAR_BaseAction::CanStartAction_Implementation(AActor* Instigator)
 {
 	UAR_ActionComponent* ActionComponent = GetOwningComponent();

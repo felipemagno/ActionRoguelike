@@ -22,13 +22,17 @@ public:
 	FGameplayTagContainer ActiveGameplayTags;
 
 	UFUNCTION(BlueprintCallable, Category="Action")
-	void AddAction(TSubclassOf<UAR_BaseAction> NewAction);
+	void AddAction(AActor* Instigator, TSubclassOf<UAR_BaseAction> NewAction);
 
 	UFUNCTION(BlueprintCallable, Category="Action")
 	bool StartAction(AActor* Instigator, FGameplayTag ActionTag);
 
 	UFUNCTION(BlueprintCallable, Category="Action")
 	bool StopAction(AActor* Instigator, FGameplayTag ActionTag);
+
+	UFUNCTION(BlueprintCallable, Category="Action")
+	void RemoveAction(UAR_BaseAction* ActionToRemove);
+
 
 protected:
 	UPROPERTY()

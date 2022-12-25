@@ -3,9 +3,8 @@
 
 #include "Projectile/AR_MagicProjectile.h"
 
+#include "Actions/AR_BaseActionEffect.h"
 #include "ActorComponent/AR_ActionComponent.h"
-#include "ActorComponent/AR_AttributeComponent.h"
-#include "Components/AudioComponent.h"
 #include "Components/SphereComponent.h"
 #include "Core/AR_GameplayFunctionLibrary.h"
 #include "GameFramework/Character.h"
@@ -18,7 +17,7 @@
 AAR_MagicProjectile::AAR_MagicProjectile()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = true;
+	PrimaryActorTick.bCanEverTick = true;	
 }
 
 void AAR_MagicProjectile::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
@@ -61,6 +60,10 @@ void AAR_MagicProjectile::OnOverlap(UPrimitiveComponent* OverlappedComponent, AA
 		{
 			Explode();
 
+			if(ProjectileEffect && ActionComponent)
+			{
+				ActionComponent->AddAction(GetInstigator(),ProjectileEffect);
+			}
 			Destroy();
 		}
 	}

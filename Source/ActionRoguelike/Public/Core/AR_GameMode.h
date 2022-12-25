@@ -15,7 +15,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnActorKilled, AActor*, VictimActo
 /**
  * 
  */
-UCLASS()
+UCLASS(Abstract)
 class ACTIONROGUELIKE_API AAR_GameMode : public AGameModeBase
 {
 	GENERATED_BODY()

@@ -9,7 +9,7 @@
 /**
  * 
  */
-UCLASS()
+UCLASS(Abstract)
 class ACTIONROGUELIKE_API AAR_CoinPickup : public AAR_Pickup
 {
 	GENERATED_BODY()

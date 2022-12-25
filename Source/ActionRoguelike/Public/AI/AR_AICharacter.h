@@ -13,7 +13,7 @@ class UPawnSensingComponent;
 class UAR_AttributeComponent;
 class UAR_ActionComponent;
 
-UCLASS()
+UCLASS(Abstract)
 class ACTIONROGUELIKE_API AAR_AICharacter : public ACharacter, public IAR_IGameplayInterface
 {
 	GENERATED_BODY()

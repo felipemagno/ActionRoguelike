@@ -9,6 +9,7 @@
 class USphereComponent;
 class UProjectileMovementComponent;
 class UParticleSystemComponent;
+class UAR_BaseActionEffect;
 
 UCLASS(Abstract)
 class ACTIONROGUELIKE_API AAR_MagicProjectile : public AAR_BaseProjectile
@@ -22,7 +23,10 @@ public:
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	float ProjectileDamage = 20;
-	
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+	TSubclassOf<UAR_BaseActionEffect> ProjectileEffect;
+
 	void OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,
 	               int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
