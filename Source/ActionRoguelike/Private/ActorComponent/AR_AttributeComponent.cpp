@@ -9,6 +9,10 @@ static TAutoConsoleVariable<float> CVarDamageMultiplier(
 	TEXT("ar_DamageMultiplier"), 1.0f,TEXT("Multiplies all damage in game"),
 	ECVF_Cheat);
 
+static TAutoConsoleVariable<float> CVarRageMultiplier(
+	TEXT("ar_RageMultiplier"), 1.0f,TEXT("Multiplies all rage gained or lost in game"),
+	ECVF_Cheat);
+
 // Sets default values for this component's properties
 UAR_AttributeComponent::UAR_AttributeComponent()
 {
@@ -19,6 +23,8 @@ UAR_AttributeComponent::UAR_AttributeComponent()
 	// ...
 	HealthMax = Health = 100;
 	bGodMode = false;
+	Rage = 0;
+	RageMax = 120;
 }
 
 
@@ -35,7 +41,7 @@ bool UAR_AttributeComponent::ApplyHealthChange(AActor* InstigatingActor, float D
 	// 	// "God" cheat sets "can be damaged" to false
 	// 	UE_LOG(LogTemp,Log,TEXT("%s cannot be damaged"),GetOwner());
 	// }
-	
+
 	if (Health <= 0 || FMath::IsNearlyZero(Delta))
 	{
 		return false;
@@ -44,9 +50,11 @@ bool UAR_AttributeComponent::ApplyHealthChange(AActor* InstigatingActor, float D
 	if (Delta < 0)
 	{
 		Delta *= CVarDamageMultiplier.GetValueOnGameThread();
+		ApplyRageChange(InstigatingActor,-Delta);
 	}
 
 	Health = FMath::Clamp(Health + Delta, 0, HealthMax);
+	
 
 	OnHealthChanged.Broadcast(InstigatingActor, this, Health, Delta, Health / HealthMax);
 	if (Health == 0)
@@ -66,6 +74,21 @@ bool UAR_AttributeComponent::ApplyMaxHeal(AActor* InstigatingActor)
 	float Delta = HealthMax - Health;
 	Health = HealthMax;
 	OnHealthChanged.Broadcast(InstigatingActor, this, Health, Delta, Health / HealthMax);
+	return true;
+}
+
+bool UAR_AttributeComponent::ApplyRageChange(AActor* InstigatingActor, float Delta)
+{
+	if ( FMath::IsNearlyZero(Delta))
+	{
+		return false;
+	}
+
+	Delta *= CVarRageMultiplier.GetValueOnGameThread();
+
+	Rage = FMath::Clamp(Rage + Delta, 0, RageMax);
+
+	OnRageChanged.Broadcast(InstigatingActor, this, Rage, Delta, Rage / RageMax);
 	return true;
 }
 

@@ -10,6 +10,10 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FOnHealthChanged, AActor*, Instiga
                                               OwningAttribute, float, NewHealthValue, float, DeltaValue, float,
                                               NewHealthPercentage);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FOnRageChanged, AActor*, InstigatingActor, UAR_AttributeComponent*,
+											  OwningAttribute, float, NewRageValue, float, DeltaValue, float,
+											  NewRagePercentage);
+
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnDeath, AActor*, InstigatingActor, UAR_AttributeComponent*,
                                              OwningAttribute);
 
@@ -34,13 +38,21 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attributes")
 	bool bGodMode;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
+	float Rage;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
+	float RageMax;
+	
 public:
 	UPROPERTY(BlueprintAssignable)
 	FOnHealthChanged OnHealthChanged;
 
 	UPROPERTY(BlueprintAssignable)
-	FOnDeath OnDeath;	
+	FOnDeath OnDeath;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnRageChanged OnRageChanged;
 
 	UFUNCTION(BlueprintCallable)
 	bool IsAlive() const;
@@ -56,6 +68,9 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	bool ApplyMaxHeal(AActor* InstigatingActor);
+
+	UFUNCTION(BlueprintCallable)
+	bool ApplyRageChange(AActor* InstigatingActor, float Delta);
 
 	UFUNCTION()
 	void ToogleGodMode();
