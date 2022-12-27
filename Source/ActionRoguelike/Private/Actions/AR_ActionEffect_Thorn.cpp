@@ -53,6 +53,6 @@ void UAR_ActionEffect_Thorn::ThornDamage(AActor* InstigatingActor, UAR_Attribute
 	}
 
 	// REFLECT DAMAGE BACK
-	const float DamageAmount = -DeltaValue * DamageReflectedPercentage;
+	const float DamageAmount = FMath::RoundToFloat(-DeltaValue * DamageReflectedPercentage);
 	UAR_GameplayFunctionLibrary::ApplyDamage(Owner,InstigatingActor,DamageAmount);
 }
