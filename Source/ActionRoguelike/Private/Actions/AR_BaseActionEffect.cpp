@@ -37,7 +37,7 @@ void UAR_BaseActionEffect::StartAction_Implementation(AActor* Instigator)
 
 void UAR_BaseActionEffect::StopAction_Implementation(AActor* Instigator)
 {
-	if(GetWorld()->GetTimerManager().GetTimerRemaining(PeriodTimer) < KINDA_SMALL_NUMBER)
+	if(GetWorld()->GetTimerManager().GetTimerRemaining(PeriodTimer) < KINDA_SMALL_NUMBER )
 	{
 		ExecutePeriodicEffect(Instigator);
 	}
