@@ -50,7 +50,10 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "UI")
 	UAR_WorldUserWidget* ActiveHealthBar;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Animation")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "UI")
+	TSubclassOf<UAR_WorldUserWidget> TargetSpottedWidgetClass;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Animation")
 	UAnimMontage* DeathMontage;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation")
@@ -59,7 +62,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Enemy Info")
 	int32 CreditsValue;
 
-	void SetTargetActor(AActor* Actor);
+	bool SetTargetActor(AActor* Actor);
 	virtual void PostInitializeComponents() override;
 
 	// EVENT RESPONSES

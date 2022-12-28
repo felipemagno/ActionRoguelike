@@ -54,12 +54,16 @@ void AAR_Pickup::Interact_Implementation(APawn* InstigatorPawn)
 
 	if (bIsActive)
 	{
-		if (PickupBehavior(InstigatorPawn))
+		if (PickupBehavior(InstigatorPawn) && InactiveDuration > 0)
 		{
 			SetActorEnableCollision(false);
 			SetActorHiddenInGame(true);
 			GetWorldTimerManager().SetTimer(InactiveTimer, this, &AAR_Pickup::ResetInteraction, InactiveDuration);
 			bIsActive = false;
+		}
+		else
+		{
+			Destroy();
 		}
 	}
 }

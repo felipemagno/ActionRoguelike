@@ -50,6 +50,5 @@ public:
 
 	// GAMEPLAY INTERFACE
 	virtual void Interact_Implementation(APawn* InstigatorPawn) override;
-virtual int32 GetCreditsValue_Implementation() override;
-	
+	virtual int32 GetCreditsValue_Implementation() override;
 };

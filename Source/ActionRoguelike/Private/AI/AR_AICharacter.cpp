@@ -116,19 +116,31 @@ void AAR_AICharacter::DeathResponse(AActor* InstigatingActor, UAR_AttributeCompo
 	SetLifeSpan(RagdollDuration);
 }
 
-void AAR_AICharacter::SetTargetActor(AActor* Actor)
+bool AAR_AICharacter::SetTargetActor(AActor* Actor)
 {
 	AAR_AIController* AiController = GetController<AAR_AIController>();
 	if (AiController)
 	{
 		UBlackboardComponent* BlackboardComponent = AiController->GetBlackboardComponent();
-
-		BlackboardComponent->SetValueAsObject(TargetActorKey, Actor);
+		if (BlackboardComponent->GetValueAsObject(TargetActorKey) != Actor)
+		{
+			BlackboardComponent->SetValueAsObject(TargetActorKey, Actor);
+			return true;
+		}
+		else { return false; }
 	}
+	return false;
 }
 
 void AAR_AICharacter::SightResponse(APawn* Pawn)
 {
-	SetTargetActor(Pawn);
-	DrawDebugString(GetWorld(), GetActorLocation(), "PLAYER SPOTTED", nullptr, FColor::Black, 4.0f, true);
+	if(SetTargetActor(Pawn) && TargetSpottedWidgetClass)
+	{
+		UAR_WorldUserWidget* TargetSpotted = CreateWidget<UAR_WorldUserWidget>(GetWorld(), TargetSpottedWidgetClass);
+
+		TargetSpotted->AttachedActor = this;
+		TargetSpotted->AddToViewport();
+		
+		//DrawDebugString(GetWorld(), GetActorLocation(), "PLAYER SPOTTED", nullptr, FColor::Black, 4.0f, true);
+	}
 }
