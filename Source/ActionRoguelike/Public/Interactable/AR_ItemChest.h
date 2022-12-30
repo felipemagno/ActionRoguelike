@@ -21,6 +21,12 @@ public:
 	AAR_ItemChest();
 
 protected:
+	UPROPERTY(ReplicatedUsing="OnRep_LidOpened",BlueprintReadOnly) //RepNotify
+	bool bLidOpened;
+
+	UFUNCTION(BlueprintNativeEvent)
+	void OnRep_LidOpened();
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	UStaticMeshComponent* BaseMesh;
 
@@ -29,6 +35,7 @@ protected:
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
 
 public:
 	// Called every frame
