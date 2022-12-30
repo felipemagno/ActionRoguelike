@@ -13,7 +13,8 @@ static TAutoConsoleVariable<bool> CVarDebugDrawInteraction(
 	ECVF_Cheat);
 
 // Sets default values for this component's properties
-UAR_InteractionComponent::UAR_InteractionComponent(): TraceDistance(500), TraceRadius(30.0f),TraceCollisionChannel(ECC_WorldDynamic)
+UAR_InteractionComponent::UAR_InteractionComponent(): TraceDistance(500), TraceRadius(30.0f),
+                                                      TraceCollisionChannel(ECC_WorldDynamic)
 {
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
@@ -37,7 +38,11 @@ void UAR_InteractionComponent::TickComponent(float DeltaTime, ELevelTick TickTyp
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	FindBestInteractable();
+	APawn* Owner = Cast<APawn>(GetOwner());
+	if (Owner->IsLocallyControlled())
+	{
+		FindBestInteractable();
+	}
 }
 
 void UAR_InteractionComponent::FindBestInteractable()
@@ -155,14 +160,18 @@ void UAR_InteractionComponent::FindBestInteractable()
 }
 
 
-void UAR_InteractionComponent::PrimaryInteract()
+void UAR_InteractionComponent::Interact()
 {
-	if (FocusedActor == nullptr)
+	ServerInteract(FocusedActor);
+}
+
+void UAR_InteractionComponent::ServerInteract_Implementation(AActor* InFocusActor)
+{
+	if (InFocusActor == nullptr)
 	{
 		GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Red, "No focus actor to interact.");
 		return;
 	}
-
 	APawn* OwnerPawn = Cast<APawn>(GetOwner());
-	IAR_IGameplayInterface::Execute_Interact(FocusedActor, OwnerPawn);
+	IAR_IGameplayInterface::Execute_Interact(InFocusActor, OwnerPawn);
 }

@@ -12,29 +12,41 @@ void AAR_PlayerController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);
 
-	if (ULocalPlayer* LocalPlayer = Cast<ULocalPlayer>(Player))
-	{
-		if (UEnhancedInputLocalPlayerSubsystem* InputSystem = LocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>())
-		{
-			if (InputMapping_Character)
-			{
-				InputSystem->AddMappingContext(InputMapping_Character, 0);
-			}
-		}
-	}
+	ClientAddMappingContext(InputMapping_Character);
 }
 
 void AAR_PlayerController::OnUnPossess()
 {
 	Super::OnUnPossess();
 
+	ClientRemoveMappingContext(InputMapping_Character);
+}
+
+void AAR_PlayerController::ClientAddMappingContext_Implementation(UInputMappingContext* InputMappingContext)
+{
+	if (ULocalPlayer* LocalPlayer = GetLocalPlayer())
+	{
+		if (UEnhancedInputLocalPlayerSubsystem* InputSystem = LocalPlayer->GetSubsystem<
+			UEnhancedInputLocalPlayerSubsystem>())
+		{
+			if (InputMappingContext)
+			{
+				InputSystem->AddMappingContext(InputMappingContext, 0);
+			}
+		}
+	}
+}
+
+void AAR_PlayerController::ClientRemoveMappingContext_Implementation(UInputMappingContext* InputMappingContext)
+{
 	if (ULocalPlayer* LocalPlayer = Cast<ULocalPlayer>(Player))
 	{
-		if (UEnhancedInputLocalPlayerSubsystem* InputSystem = LocalPlayer->GetSubsystem<UEnhancedInputLocalPlayerSubsystem>())
+		if (UEnhancedInputLocalPlayerSubsystem* InputSystem = LocalPlayer->GetSubsystem<
+			UEnhancedInputLocalPlayerSubsystem>())
 		{
-			if (InputMapping_Character)
+			if (InputMappingContext)
 			{
-				InputSystem->RemoveMappingContext(InputMapping_Character);
+				InputSystem->RemoveMappingContext(InputMappingContext);
 			}
 		}
 	}

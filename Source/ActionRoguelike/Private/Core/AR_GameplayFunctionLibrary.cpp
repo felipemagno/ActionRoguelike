@@ -25,7 +25,7 @@ bool UAR_GameplayFunctionLibrary::ApplyDirectionalDamage(AActor* DamageInstigato
 	if (ApplyDamage(DamageInstigator, TargetActor, DamageAmount))
 	{
 		UPrimitiveComponent* HitComponent = HitResult.GetComponent();
-		if(HitComponent && HitComponent->IsSimulatingPhysics(HitResult.BoneName))
+		if(HitComponent && HitComponent->IsSimulatingPhysics(HitResult.BoneName) && HitComponent->Mobility == EComponentMobility::Movable)
 		{
 			FVector Direction = HitResult.ImpactPoint - HitResult.TraceStart;
 			Direction.Normalize();

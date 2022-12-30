@@ -14,8 +14,6 @@ class ACTIONROGUELIKE_API UAR_InteractionComponent : public UActorComponent
 	GENERATED_BODY()
 
 public:
-	void PrimaryInteract();
-
 	// Sets default values for this component's properties
 	UAR_InteractionComponent();
 
@@ -37,16 +35,23 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Interaction")
 	TEnumAsByte<ECollisionChannel> TraceCollisionChannel;
-	
+
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
+	
 	void FindBestInteractable();
 
 
 public:
-	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 	                           FActorComponentTickFunction* ThisTickFunction) override;
+	
+	// Reliable - Will always arrive, eventually. Request will be re-sent unless an acknowledgment is received
+	// Unreliable -  Not guaranteed, packet can be lost and won't retry
+	UFUNCTION(Server, Reliable)
+	void ServerInteract(AActor* InFocusActor);
+
+	void Interact();
 };

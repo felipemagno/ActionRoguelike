@@ -228,7 +228,7 @@ void AAR_Player::PrimaryInteract(const FInputActionValue& InputActionValue)
 {
 	if (InteractionComp)
 	{
-		InteractionComp->PrimaryInteract();
+		InteractionComp->Interact();
 	}
 }
 

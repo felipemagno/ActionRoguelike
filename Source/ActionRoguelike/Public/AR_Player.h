@@ -61,6 +61,7 @@ protected:
 	UPROPERTY(EditDefaultsOnly, Category = "Tags")
 	FGameplayTag GameTag_Sprint;
 
+#pragma region INPUTS
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Input")
 	UInputAction* Input_MoveForward;
@@ -91,6 +92,8 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category="Input")
 	UInputAction* Input_Sprint;
+#pragma endregion
+	
 public:
 	// MOVEMENT
 	void MoveForward(const FInputActionValue& InputActionValue);
