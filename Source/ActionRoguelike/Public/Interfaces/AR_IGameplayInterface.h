@@ -33,4 +33,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	int32 GetCreditsValue();
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
+	bool IsActive(); 
 };

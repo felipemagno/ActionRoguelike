@@ -103,7 +103,7 @@ void UAR_InteractionComponent::FindBestInteractable()
 					DrawDebugSphere(GetWorld(), hit.ImpactPoint, TraceRadius, 12, DebugSphereColor, false, 3, 0,
 					                2);
 				}
-				if (HitActor->Implements<UAR_IGameplayInterface>())
+				if (HitActor->Implements<UAR_IGameplayInterface>() && IAR_IGameplayInterface::Execute_IsActive(HitActor))
 				{
 					// Only accepts if there is a clear line of sight to the interactable actor
 					FHitResult VisibilityHit;

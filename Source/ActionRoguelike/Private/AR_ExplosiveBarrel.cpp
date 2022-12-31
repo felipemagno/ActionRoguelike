@@ -26,6 +26,7 @@ AAR_ExplosiveBarrel::AAR_ExplosiveBarrel()
 	RadialForceComp->SetupAttachment(StaticMeshComp);
 
 	ExplosionDamage = -35;
+	SetReplicates(true);
 }
 
 void AAR_ExplosiveBarrel::PostInitializeComponents()

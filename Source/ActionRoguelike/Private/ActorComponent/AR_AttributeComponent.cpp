@@ -4,6 +4,7 @@
 #include "ActorComponent/AR_AttributeComponent.h"
 
 #include "Core/AR_GameMode.h"
+#include "Net/UnrealNetwork.h"
 
 static TAutoConsoleVariable<float> CVarDamageMultiplier(
 	TEXT("ar_DamageMultiplier"), 1.0f,TEXT("Multiplies all damage in game"),
@@ -25,6 +26,16 @@ UAR_AttributeComponent::UAR_AttributeComponent()
 	bGodMode = false;
 	Rage = 0;
 	RageMax = 120;
+
+	SetIsReplicatedByDefault(true);
+}
+
+void UAR_AttributeComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(UAR_AttributeComponent, Health);
+	DOREPLIFETIME(UAR_AttributeComponent, HealthMax);
 }
 
 
@@ -50,13 +61,15 @@ bool UAR_AttributeComponent::ApplyHealthChange(AActor* InstigatingActor, float D
 	if (Delta < 0)
 	{
 		Delta *= CVarDamageMultiplier.GetValueOnGameThread();
-		ApplyRageChange(InstigatingActor,-Delta);
+		ApplyRageChange(InstigatingActor, -Delta);
 	}
 
-	Health = FMath::Clamp(Health + Delta, 0, HealthMax);
-	
+	if (!FMath::IsNearlyZero(Delta))
+	{
+		Health = FMath::Clamp(Health + Delta, 0, HealthMax);
+		MulticastHealthChanged(InstigatingActor, Health, Delta, Health / HealthMax);
+	}
 
-	OnHealthChanged.Broadcast(InstigatingActor, this, Health, Delta, Health / HealthMax);
 	if (Health == 0)
 	{
 		OnDeath.Broadcast(InstigatingActor, this);
@@ -73,13 +86,13 @@ bool UAR_AttributeComponent::ApplyMaxHeal(AActor* InstigatingActor)
 	if (IsFullHealth() || Health <= 0) return false;
 	float Delta = HealthMax - Health;
 	Health = HealthMax;
-	OnHealthChanged.Broadcast(InstigatingActor, this, Health, Delta, Health / HealthMax);
+	MulticastHealthChanged(InstigatingActor, Health, Delta, Health / HealthMax);
 	return true;
 }
 
 bool UAR_AttributeComponent::ApplyRageChange(AActor* InstigatingActor, float Delta)
 {
-	if ( FMath::IsNearlyZero(Delta))
+	if (FMath::IsNearlyZero(Delta))
 	{
 		return false;
 	}
@@ -105,4 +118,15 @@ bool UAR_AttributeComponent::IsFullHealth() const
 float UAR_AttributeComponent::GetHealthPercentage() const
 {
 	return Health / HealthMax;
+}
+
+void UAR_AttributeComponent::MulticastHealthChanged_Implementation(AActor* InstigatingActor, float NewHealthValue,
+                                                                   float DeltaValue, float NewHealthPercentage)
+{
+	OnHealthChanged.Broadcast(InstigatingActor, this, NewHealthValue, DeltaValue, NewHealthPercentage);
+}
+
+void UAR_AttributeComponent::MulticastOnDeath_Implementation(AActor* InstigatingActor)
+{
+	OnDeath.Broadcast(InstigatingActor, this);
 }

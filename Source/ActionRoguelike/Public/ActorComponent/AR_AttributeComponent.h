@@ -11,8 +11,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FOnHealthChanged, AActor*, Instiga
                                               NewHealthPercentage);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_FiveParams(FOnRageChanged, AActor*, InstigatingActor, UAR_AttributeComponent*,
-											  OwningAttribute, float, NewRageValue, float, DeltaValue, float,
-											  NewRagePercentage);
+                                              OwningAttribute, float, NewRageValue, float, DeltaValue, float,
+                                              NewRagePercentage);
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnDeath, AActor*, InstigatingActor, UAR_AttributeComponent*,
                                              OwningAttribute);
@@ -23,16 +23,14 @@ class ACTIONROGUELIKE_API UAR_AttributeComponent : public UActorComponent
 	GENERATED_BODY()
 
 public:
-
 	// Sets default values for this component's properties
 	UAR_AttributeComponent();
 
 protected:
-	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Replicated, Category = "Attributes")
 	float Health;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Replicated, Category = "Attributes")
 	float HealthMax;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attributes")
@@ -43,7 +41,13 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
 	float RageMax;
-	
+
+	UFUNCTION(NetMulticast, Unreliable)
+	void MulticastHealthChanged(AActor* InstigatingActor, float NewHealthValue, float DeltaValue,
+	                            float NewHealthPercentage);
+
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastOnDeath(AActor* InstigatingActor);
 public:
 	UPROPERTY(BlueprintAssignable)
 	FOnHealthChanged OnHealthChanged;
@@ -59,7 +63,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	bool IsFullHealth() const;
-	
+
 	UFUNCTION(BlueprintCallable)
 	float GetHealthPercentage() const;
 
@@ -74,5 +78,4 @@ public:
 
 	UFUNCTION()
 	void ToogleGodMode();
-
 };

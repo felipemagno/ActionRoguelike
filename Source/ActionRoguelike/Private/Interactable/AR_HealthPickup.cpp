@@ -12,6 +12,8 @@ AAR_HealthPickup::AAR_HealthPickup()
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 	CreditsValue = 5;
+	
+	SetReplicates(true);
 }
 
 // Called when the game starts or when spawned

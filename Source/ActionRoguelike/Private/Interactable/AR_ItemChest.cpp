@@ -9,7 +9,7 @@
 
 // Sets default values
 AAR_ItemChest::AAR_ItemChest()
-{
+{	
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -24,6 +24,13 @@ AAR_ItemChest::AAR_ItemChest()
 	SetReplicates(true);
 }
 
+void AAR_ItemChest::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AAR_ItemChest,bLidOpened);
+}
+
 // Called when the game starts or when spawned
 void AAR_ItemChest::BeginPlay()
 {
@@ -34,13 +41,6 @@ void AAR_ItemChest::BeginPlay()
 void AAR_ItemChest::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-}
-
-void AAR_ItemChest::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-	DOREPLIFETIME(AAR_ItemChest,bLidOpened);
 }
 
 

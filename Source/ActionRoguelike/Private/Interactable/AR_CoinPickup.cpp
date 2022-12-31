@@ -8,6 +8,8 @@
 AAR_CoinPickup::AAR_CoinPickup()
 {
 	CreditsValue = 1;
+	
+	SetReplicates(true);
 }
 
 bool AAR_CoinPickup::PickupBehavior(APawn* InstigatorPawn)

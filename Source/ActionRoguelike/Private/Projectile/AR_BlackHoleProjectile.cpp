@@ -13,6 +13,8 @@ AAR_BlackHoleProjectile::AAR_BlackHoleProjectile()
 	RadialForceComponent = CreateDefaultSubobject<URadialForceComponent>("RadialForceComponent");
 	RadialForceComponent->Radius = 1000.0f;
 	RadialForceComponent->ForceStrength = -600000.0f;
+	
+	SetReplicates(true);
 }
 
 // Called when the game starts or when spawned
