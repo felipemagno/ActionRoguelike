@@ -39,6 +39,9 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void Explode();
 
+	UFUNCTION(Server, Reliable)
+	void ServerExplode();
+
 	virtual void PostInitializeComponents() override;
 public:
 };

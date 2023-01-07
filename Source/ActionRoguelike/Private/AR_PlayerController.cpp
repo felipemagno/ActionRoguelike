@@ -8,6 +8,10 @@
 
 #include "EnhancedInputComponent.h"
 
+static TAutoConsoleVariable<bool> CVarEnableDebugDraw(
+	TEXT("ar_Debug.EnableAllDraw"), false,TEXT("Enable all Draw Debugs"),
+	ECVF_Cheat);
+
 void AAR_PlayerController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);

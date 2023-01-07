@@ -36,10 +36,10 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Attributes")
 	bool bGodMode;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Replicated, Category = "Attributes")
 	float Rage;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Attributes")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Replicated, Category = "Attributes")
 	float RageMax;
 
 	UFUNCTION(NetMulticast, Unreliable)
@@ -48,6 +48,9 @@ protected:
 
 	UFUNCTION(NetMulticast, Reliable)
 	void MulticastOnDeath(AActor* InstigatingActor);
+
+	UFUNCTION(NetMulticast, Unreliable)
+	void MulticastRageChange(AActor* InstigatingActor, float NewRageValue, float DeltaValue, float NewRagePercentage);
 public:
 	UPROPERTY(BlueprintAssignable)
 	FOnHealthChanged OnHealthChanged;

@@ -36,8 +36,9 @@ void UAR_AttributeComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty
 
 	DOREPLIFETIME(UAR_AttributeComponent, Health);
 	DOREPLIFETIME(UAR_AttributeComponent, HealthMax);
+	DOREPLIFETIME(UAR_AttributeComponent, Rage);
+	DOREPLIFETIME(UAR_AttributeComponent, RageMax);
 }
-
 
 bool UAR_AttributeComponent::IsAlive() const
 {
@@ -101,7 +102,7 @@ bool UAR_AttributeComponent::ApplyRageChange(AActor* InstigatingActor, float Del
 
 	Rage = FMath::Clamp(Rage + Delta, 0, RageMax);
 
-	OnRageChanged.Broadcast(InstigatingActor, this, Rage, Delta, Rage / RageMax);
+	MulticastRageChange(InstigatingActor, Rage, Delta, Rage / RageMax);
 	return true;
 }
 
@@ -129,4 +130,10 @@ void UAR_AttributeComponent::MulticastHealthChanged_Implementation(AActor* Insti
 void UAR_AttributeComponent::MulticastOnDeath_Implementation(AActor* InstigatingActor)
 {
 	OnDeath.Broadcast(InstigatingActor, this);
+}
+
+void UAR_AttributeComponent::MulticastRageChange_Implementation(AActor* InstigatingActor, float NewRageValue,
+                                                                float DeltaValue, float NewRagePercentage)
+{
+	OnRageChanged.Broadcast(InstigatingActor, this, NewRageValue, DeltaValue, NewRagePercentage);
 }

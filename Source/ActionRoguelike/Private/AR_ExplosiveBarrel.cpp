@@ -5,6 +5,7 @@
 
 #include "ActorComponent/AR_AttributeComponent.h"
 #include "ActorComponent/AR_InteractionComponent.h"
+#include "Core/AR_GameplayFunctionLibrary.h"
 #include "GameFramework/Actor.h"
 #include "PhysicsEngine/RadialForceComponent.h"
 
@@ -47,7 +48,14 @@ void AAR_ExplosiveBarrel::OnHit(UPrimitiveComponent* PrimitiveComponent, AActor*
 {
 	if (Actor->ActorHasTag("Projectile"))
 	{
-		Explode();
+		if (HasAuthority())
+		{
+			Explode();
+		}
+		else
+		{
+			ServerExplode();
+		}
 
 		// %s string
 		// %f float
@@ -73,26 +81,37 @@ void AAR_ExplosiveBarrel::Explode()
 		QueryParams.AddObjectTypesToQuery(ECC_WorldDynamic);
 		QueryParams.AddObjectTypesToQuery(ECC_Pawn);
 
-		bool bBlockingHit = GetWorld()->OverlapMultiByObjectType(OverlapResults, GetActorLocation(), FQuat::Identity,
-		                                                         QueryParams, CollisionShape);
-		DrawDebugSphere(GetWorld(), GetActorLocation(), RadialForceComp->Radius, 32, FColor::Black, false, 4, 0, 2);
+		GetWorld()->OverlapMultiByObjectType(OverlapResults, GetActorLocation(), FQuat::Identity,
+		                                     QueryParams, CollisionShape);
 
-		TArray<AActor*> ActorsHit;
-
-		for (FOverlapResult Overlap : OverlapResults)
+		static const auto CVarDebugDraw = IConsoleManager::Get().FindConsoleVariable(TEXT("ar_Debug.EnableAllDraw"));
+		bool bDebugDraw = CVarDebugDraw->GetBool();
+		if (bDebugDraw)
 		{
-			AActor* HitActor = Overlap.GetActor();
-			if (HitActor && !ActorsHit.Contains(HitActor))
+			DrawDebugSphere(GetWorld(), GetActorLocation(), RadialForceComp->Radius, 32, FColor::Black, false, 4, 0, 2);
+		}
+
+		// Damage behaviour should only be executed in the server
+		if (HasAuthority())
+		{
+			TArray<AActor*> ActorsHit;
+
+			for (FOverlapResult Overlap : OverlapResults)
 			{
-				ActorsHit.Add(HitActor);
-				auto* AttributeComp = Cast<UAR_AttributeComponent>(
-					HitActor->GetComponentByClass(UAR_AttributeComponent::StaticClass()));
-				if (AttributeComp)
+				AActor* HitActor = Overlap.GetActor();
+				if (HitActor && !ActorsHit.Contains(HitActor))
 				{
-					AttributeComp->ApplyHealthChange(this, ExplosionDamage);
+					ActorsHit.Add(HitActor);
+
+					UAR_GameplayFunctionLibrary::ApplyDamage(GetInstigator(), HitActor, FMath::Abs(ExplosionDamage));
 				}
 			}
 		}
 	}
 	UE_LOG(LogTemp, Log, TEXT("Barrel Explode"));
+}
+
+void AAR_ExplosiveBarrel::ServerExplode_Implementation()
+{
+	Explode();
 }
