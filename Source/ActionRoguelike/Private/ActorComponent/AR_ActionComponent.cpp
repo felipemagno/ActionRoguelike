@@ -13,6 +13,7 @@ UAR_ActionComponent::UAR_ActionComponent()
 	PrimaryComponentTick.bCanEverTick = true;
 
 	CurrentAction = FGameplayTag::EmptyTag;
+	SetIsReplicatedByDefault(true);
 }
 
 // Called when the game starts
@@ -50,6 +51,11 @@ void UAR_ActionComponent::AddAction(AActor* Instigator, TSubclassOf<UAR_BaseActi
 	UAR_BaseAction* ActionObject = NewObject<UAR_BaseAction>(this, NewAction);
 	if (ensure(ActionObject))
 	{
+		if (!GetOwner()->HasAuthority())
+		{
+			ServerAddAction(Instigator,NewAction);
+		}
+		
 		Actions.Add(ActionObject);
 		if(ActionObject->AutoStart && ensure(ActionObject->CanStartAction(Instigator)))
 		{
@@ -57,6 +63,7 @@ void UAR_ActionComponent::AddAction(AActor* Instigator, TSubclassOf<UAR_BaseActi
 		}
 	}
 }
+
 
 bool UAR_ActionComponent::StartAction(AActor* Instigator, FGameplayTag ActionTag)
 {
@@ -71,6 +78,11 @@ bool UAR_ActionComponent::StartAction(AActor* Instigator, FGameplayTag ActionTag
 				continue;
 			}
 
+			if (!GetOwner()->HasAuthority())
+			{
+				ServerStartAction(Instigator,ActionTag);
+			}
+			
 			Action->StartAction(GetOwner());
 			CurrentAction = Action->ActionTag;
 			return true;
@@ -101,4 +113,14 @@ void UAR_ActionComponent::RemoveAction(UAR_BaseAction* ActionToRemove)
 	}
 
 	Actions.Remove(ActionToRemove);
+}
+
+void UAR_ActionComponent::ServerStartAction_Implementation(AActor* Instigator, FGameplayTag ActionTag)
+{
+	StartAction(Instigator,ActionTag);
+}
+
+void UAR_ActionComponent::ServerAddAction_Implementation(AActor* Instigator, TSubclassOf<UAR_BaseAction> NewAction)
+{
+	AddAction(Instigator,NewAction);
 }

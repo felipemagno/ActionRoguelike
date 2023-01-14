@@ -28,7 +28,7 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float InactiveDuration;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(Replicated,EditAnywhere, BlueprintReadWrite)
 	bool bIsActive;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
@@ -41,12 +41,16 @@ protected:
 
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	UFUNCTION(NetMulticast,Unreliable)
+	virtual void MulticastPickupEffects();
+
+	UFUNCTION(NetMulticast,Reliable)
+	virtual void MulticastPickupReset();
+
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-	UFUNCTION()
-	void ResetInteraction();
 
 	// GAMEPLAY INTERFACE
 	virtual void Interact_Implementation(APawn* InstigatorPawn) override;

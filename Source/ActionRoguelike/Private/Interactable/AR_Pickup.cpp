@@ -5,6 +5,7 @@
 
 #include "ActorComponent/AR_AttributeComponent.h"
 #include "Components/SphereComponent.h"
+#include "Net/UnrealNetwork.h"
 
 
 // Sets default values
@@ -21,7 +22,15 @@ AAR_Pickup::AAR_Pickup()
 
 	bIsActive = true;
 	InactiveDuration = 5.0f;
-	CreditsValue = 1;	
+	CreditsValue = 1;
+	SetReplicates(true);
+}
+
+void AAR_Pickup::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(AAR_Pickup, bIsActive);
 }
 
 bool AAR_Pickup::PickupBehavior(APawn* InstigatorPawn)
@@ -35,17 +44,11 @@ void AAR_Pickup::BeginPlay()
 	Super::BeginPlay();
 }
 
+
 // Called every frame
 void AAR_Pickup::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-}
-
-void AAR_Pickup::ResetInteraction()
-{
-	SetActorEnableCollision(true);
-	SetActorHiddenInGame(false);
-	bIsActive = true;
 }
 
 void AAR_Pickup::Interact_Implementation(APawn* InstigatorPawn)
@@ -54,18 +57,33 @@ void AAR_Pickup::Interact_Implementation(APawn* InstigatorPawn)
 
 	if (bIsActive)
 	{
-		if (PickupBehavior(InstigatorPawn) && InactiveDuration > 0)
+		if (PickupBehavior(InstigatorPawn) )
 		{
-			SetActorEnableCollision(false);
-			SetActorHiddenInGame(true);
-			GetWorldTimerManager().SetTimer(InactiveTimer, this, &AAR_Pickup::ResetInteraction, InactiveDuration);
-			bIsActive = false;
-		}
-		else
-		{
-			Destroy();
+			MulticastPickupEffects();
+			if(InactiveDuration > 0)
+			{
+				GetWorldTimerManager().SetTimer(InactiveTimer, this, &AAR_Pickup::MulticastPickupReset, InactiveDuration);
+				bIsActive = false;
+			}else
+			{
+				Destroy();
+			}
 		}
 	}
+}
+
+void AAR_Pickup::MulticastPickupEffects_Implementation()
+{
+	SetActorEnableCollision(false);
+	SetActorHiddenInGame(true);
+	
+}
+
+void AAR_Pickup::MulticastPickupReset_Implementation()
+{
+	SetActorEnableCollision(true);
+	SetActorHiddenInGame(false);
+	bIsActive = true;
 }
 
 int32 AAR_Pickup::GetCreditsValue_Implementation()

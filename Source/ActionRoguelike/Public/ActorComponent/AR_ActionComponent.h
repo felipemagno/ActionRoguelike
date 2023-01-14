@@ -35,6 +35,8 @@ public:
 
 
 protected:
+	FGameplayTag CurrentAction;
+	
 	UPROPERTY()
 	TArray<UAR_BaseAction*> Actions;
 
@@ -44,7 +46,11 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-	FGameplayTag CurrentAction;
+	UFUNCTION(Server,Reliable)
+	void ServerStartAction(AActor* Instigator, FGameplayTag ActionTag);
+
+	UFUNCTION(Server,Reliable)
+	void ServerAddAction(AActor* Instigator, TSubclassOf<UAR_BaseAction> NewAction);
 
 public:
 	// Called every frame

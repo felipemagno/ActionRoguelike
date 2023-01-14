@@ -17,8 +17,15 @@ class ACTIONROGUELIKE_API AAR_PlayerState : public APlayerState
 	GENERATED_BODY()
 
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player")
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadOnly, Category = "Player")
 	int32 PlayerCredits;
+
+	UFUNCTION(Server, Reliable)
+	void ServerUpdateCredits(int32 DeltaValue);
+
+	UFUNCTION(NetMulticast, Unreliable)
+	void MulticastOnUpdateCredits(int32 NewPlayerCredits);
+
 
 public:
 	AAR_PlayerState();
