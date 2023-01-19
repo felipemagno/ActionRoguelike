@@ -38,4 +38,5 @@ public:
 
 	UFUNCTION(BlueprintGetter)
 	int32 GetCredits();
+
 };

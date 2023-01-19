@@ -69,6 +69,9 @@ protected:
 	UFUNCTION()
 	void SightResponse(APawn* Pawn);
 
+	UFUNCTION(NetMulticast,Unreliable)
+	void MulticastSightResponse();
+
 	UFUNCTION()
 	void HealthChangedResponse(AActor* InstigatingActor, UAR_AttributeComponent* OwningAttribute, float NewHealthValue,
 	                           float DeltaValue, float NewHealthPercentage);

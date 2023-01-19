@@ -29,4 +29,10 @@ protected:
 	void ClientAddMappingContext(UInputMappingContext* InputMappingContext);
 	UFUNCTION(Client, Reliable)
 	void ClientRemoveMappingContext(UInputMappingContext* InputMappingContext);
+
+	
+	virtual void BeginPlayingState() override;
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void BlueprintBeginPlayingState();
 };

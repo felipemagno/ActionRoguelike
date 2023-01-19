@@ -132,6 +132,7 @@ public:
 	virtual void PostInitializeComponents() override;
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	
 
 	// GAMEPLAY INTERFACE
 	virtual bool SpendCredits_Implementation(int32 CreditsCost) override;

@@ -136,11 +136,15 @@ void AAR_AICharacter::SightResponse(APawn* Pawn)
 {
 	if(SetTargetActor(Pawn) && TargetSpottedWidgetClass)
 	{
-		UAR_WorldUserWidget* TargetSpotted = CreateWidget<UAR_WorldUserWidget>(GetWorld(), TargetSpottedWidgetClass);
-
-		TargetSpotted->AttachedActor = this;
-		TargetSpotted->AddToViewport();
+		MulticastSightResponse();
 		
 		//DrawDebugString(GetWorld(), GetActorLocation(), "PLAYER SPOTTED", nullptr, FColor::Black, 4.0f, true);
 	}
+}
+
+void AAR_AICharacter::MulticastSightResponse_Implementation()
+{
+	UAR_WorldUserWidget* TargetSpotted = CreateWidget<UAR_WorldUserWidget>(GetWorld(), TargetSpottedWidgetClass);
+	TargetSpotted->AttachedActor = this;
+	TargetSpotted->AddToViewport();
 }

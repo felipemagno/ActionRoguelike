@@ -26,6 +26,12 @@ void AAR_PlayerController::OnUnPossess()
 	ClientRemoveMappingContext(InputMapping_Character);
 }
 
+void AAR_PlayerController::BeginPlayingState()
+{
+	Super::BeginPlayingState();
+	BlueprintBeginPlayingState();
+}
+
 void AAR_PlayerController::ClientAddMappingContext_Implementation(UInputMappingContext* InputMappingContext)
 {
 	if (ULocalPlayer* LocalPlayer = GetLocalPlayer())
