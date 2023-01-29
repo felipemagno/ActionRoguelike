@@ -3,7 +3,10 @@
 
 #include "ActorComponent/AR_ActionComponent.h"
 
+#include "ActionRoguelike/ActionRoguelike.h"
 #include "Actions/AR_BaseAction.h"
+#include "Engine/ActorChannel.h"
+#include "Net/UnrealNetwork.h"
 
 // Sets default values for this component's properties
 UAR_ActionComponent::UAR_ActionComponent()
@@ -16,14 +19,38 @@ UAR_ActionComponent::UAR_ActionComponent()
 	SetIsReplicatedByDefault(true);
 }
 
+void UAR_ActionComponent::GetLifetimeReplicatedProps( TArray< class FLifetimeProperty > & OutLifetimeProps ) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(UAR_ActionComponent, Actions);
+}
+
+bool UAR_ActionComponent::ReplicateSubobjects(UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags)
+{
+	bool WroteSomething  = Super::ReplicateSubobjects(Channel, Bunch, RepFlags);
+	for(UAR_BaseAction* Action : Actions)
+	{
+		if(Action)
+		{
+			WroteSomething |= Channel->ReplicateSubobject(Action,*Bunch,*RepFlags);
+		}
+	}
+	return WroteSomething;
+}
+
 // Called when the game starts
 void UAR_ActionComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	for (TSubclassOf<UAR_BaseAction> ActionClass : DefaultActions)
+	// Server Only
+	if (GetOwner()->HasAuthority())
 	{
-		AddAction(GetOwner(),ActionClass);
+		for (TSubclassOf<UAR_BaseAction> ActionClass : DefaultActions)
+		{
+			AddAction(GetOwner(), ActionClass);
+		}
 	}
 }
 
@@ -35,8 +62,20 @@ void UAR_ActionComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	// ...
-	FString DebugText = GetNameSafe(GetOwner()) + " : " + ActiveGameplayTags.ToStringSimple();
-	GEngine->AddOnScreenDebugMessage(-1, 0, FColor::White, DebugText);
+	// FString DebugText = GetNameSafe(GetOwner()) + " : " + ActiveGameplayTags.ToStringSimple();
+	// GEngine->AddOnScreenDebugMessage(-1, 0, FColor::White, DebugText);
+
+	for (UAR_BaseAction* Action : Actions)
+	{
+		FColor TextColor = Action->IsRunning() ? FColor::Blue : FColor::White;
+
+		FString ActionMsg = FString::Printf(TEXT("[%s] Action: %s - IsRunning: %s - Outer: %s"),
+		                                    *GetNameSafe(GetOwner()),
+		                                    *Action->GetName(),
+		                                    Action->IsRunning() ? TEXT("True") : TEXT("False"),
+		                                    *GetNameSafe(Action->GetOuter()));
+		LogOnScreen(this, ActionMsg, TextColor, 0.0f);
+	}
 }
 
 FGameplayTag UAR_ActionComponent::GetCurrentAction()
@@ -53,11 +92,11 @@ void UAR_ActionComponent::AddAction(AActor* Instigator, TSubclassOf<UAR_BaseActi
 	{
 		if (!GetOwner()->HasAuthority())
 		{
-			ServerAddAction(Instigator,NewAction);
+			ServerAddAction(Instigator, NewAction);
 		}
-		
+
 		Actions.Add(ActionObject);
-		if(ActionObject->AutoStart && ensure(ActionObject->CanStartAction(Instigator)))
+		if (ActionObject->AutoStart && ensure(ActionObject->CanStartAction(Instigator)))
 		{
 			ActionObject->StartAction(Instigator);
 		}
@@ -80,9 +119,9 @@ bool UAR_ActionComponent::StartAction(AActor* Instigator, FGameplayTag ActionTag
 
 			if (!GetOwner()->HasAuthority())
 			{
-				ServerStartAction(Instigator,ActionTag);
+				ServerStartAction(Instigator, ActionTag);
 			}
-			
+
 			Action->StartAction(GetOwner());
 			CurrentAction = Action->ActionTag;
 			return true;
@@ -117,10 +156,10 @@ void UAR_ActionComponent::RemoveAction(UAR_BaseAction* ActionToRemove)
 
 void UAR_ActionComponent::ServerStartAction_Implementation(AActor* Instigator, FGameplayTag ActionTag)
 {
-	StartAction(Instigator,ActionTag);
+	StartAction(Instigator, ActionTag);
 }
 
 void UAR_ActionComponent::ServerAddAction_Implementation(AActor* Instigator, TSubclassOf<UAR_BaseAction> NewAction)
 {
-	AddAction(Instigator,NewAction);
+	AddAction(Instigator, NewAction);
 }

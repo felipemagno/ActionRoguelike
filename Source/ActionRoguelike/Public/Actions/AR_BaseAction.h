@@ -30,17 +30,21 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "Action")
 	UAR_ActionComponent* GetOwningComponent() const;
 
+	UPROPERTY(ReplicatedUsing="OnRep_IsRunning")
 	bool bIsRunning;
-	
+
+	UFUNCTION()
+	void OnRep_IsRunning();
+
 public:
 	// Starts automatically when added 
 	UPROPERTY(EditDefaultsOnly, Category="Action")
 	bool AutoStart;
-	
+
 	// Action tag to start without object reference
 	UPROPERTY(EditDefaultsOnly, Category="Tags")
 	FGameplayTag ActionTag;
-	
+
 	UFUNCTION(BlueprintGetter, Category= "Action")
 	bool IsRunning() const;
 
@@ -53,7 +57,7 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "Action")
 	void StopAction(AActor* Instigator);
 
-	
-	
+	virtual bool IsSupportedForNetworking() const override { return true; };
+
 	virtual UWorld* GetWorld() const override;
 };

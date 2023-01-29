@@ -36,8 +36,8 @@ public:
 
 protected:
 	FGameplayTag CurrentAction;
-	
-	UPROPERTY()
+
+	UPROPERTY(Replicated)
 	TArray<UAR_BaseAction*> Actions;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Action")
@@ -46,16 +46,18 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
-	UFUNCTION(Server,Reliable)
+	UFUNCTION(Server, Reliable)
 	void ServerStartAction(AActor* Instigator, FGameplayTag ActionTag);
 
-	UFUNCTION(Server,Reliable)
+	UFUNCTION(Server, Reliable)
 	void ServerAddAction(AActor* Instigator, TSubclassOf<UAR_BaseAction> NewAction);
 
 public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 	                           FActorComponentTickFunction* ThisTickFunction) override;
+
+	virtual bool ReplicateSubobjects(UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags) override;
 
 	UFUNCTION(BlueprintGetter)
 	FGameplayTag GetCurrentAction();
