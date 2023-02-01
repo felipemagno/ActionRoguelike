@@ -27,27 +27,11 @@ void AAR_MagicProjectile::OnOverlap(UPrimitiveComponent* OverlappedComponent, AA
 {
 	UAR_ActionComponent* ActionComponent = Cast<UAR_ActionComponent>(
 		OtherActor->GetComponentByClass(UAR_ActionComponent::StaticClass()));
-	// if (ActionComponent)
-	// 	GEngine->AddOnScreenDebugMessage(-1, 3, FColor::Orange,
-	// 	                                 "Projectile Overlap: Projectile Parry Tag (" + ParryTag.ToString() +
-	// 	                                 "); OtherActorTag: (" + ActionComponent->ActiveGameplayTags.ToStringSimple() +
-	// 	                                 ");");
 
 	if (OtherActor && OtherActor != GetInstigator())
 	{
 		if (ActionComponent && ActionComponent->ActiveGameplayTags.HasTag(ParryTag))
 		{
-			// FString DebugText;
-			// TArray<AActor*> IgnoreList = SphereComp->GetMoveIgnoreActors();
-			// for (AActor* IgnoredActor : IgnoreList)
-			// {
-			// 	DebugText += IgnoredActor->GetName() + "; ";
-			// }
-			//
-			// UE_LOG(LogTemp, Log, TEXT("%s Projectile Debug#1: HitComp- %s, HitActor- %s"), *this->GetName(),
-			//        *OtherComp->GetName(), *OtherActor->GetName())
-			//
-			// UE_LOG(LogTemp, Log, TEXT("%s Projectile Debug#2: IgnoredActors - %s"), *this->GetName(), *DebugText)
 
 			MovementComp->Velocity = -MovementComp->Velocity;
 

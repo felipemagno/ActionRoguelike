@@ -12,11 +12,11 @@ UAR_BaseAction::UAR_BaseAction()
 	AutoStart = false;
 }
 
-void UAR_BaseAction::GetLifetimeReplicatedProps( TArray< class FLifetimeProperty > & OutLifetimeProps ) const
+void UAR_BaseAction::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
-	DOREPLIFETIME(UAR_BaseAction, bIsRunning);
+	DOREPLIFETIME(UAR_BaseAction, RepData);
 }
 
 bool UAR_BaseAction::CanStartAction_Implementation(AActor* Instigator)
@@ -33,26 +33,28 @@ bool UAR_BaseAction::CanStartAction_Implementation(AActor* Instigator)
 
 void UAR_BaseAction::StartAction_Implementation(AActor* Instigator)
 {
-	// UE_LOG(LogTemp, Log, TEXT("StartAction: %s"), *GetNameSafe(this));
-	LogOnScreen(this, FString::Printf(TEXT("StartAction: %s"), *GetNameSafe(this)), FColor::Green);
+	 UE_LOG(LogTemp, Log, TEXT("StartAction: %s"), *GetNameSafe(this));
+	//LogOnScreen(this, FString::Printf(TEXT("StartAction: %s"), *GetNameSafe(this)), FColor::Green);
 
 	UAR_ActionComponent* ActionComponent = GetOwningComponent();
 	ActionComponent->ActiveGameplayTags.AppendTags(GrantedTags);
 
-	bIsRunning = true;
+	RepData.bIsRunning = true;
+	RepData.Instigator = Instigator;
 }
 
 void UAR_BaseAction::StopAction_Implementation(AActor* Instigator)
 {
-	// UE_LOG(LogTemp, Log, TEXT("StopAction: %s"), *GetNameSafe(this));
-	LogOnScreen(this, FString::Printf(TEXT("StopAction: %s"), *GetNameSafe(this)), FColor::White);
+	 UE_LOG(LogTemp, Log, TEXT("StopAction: %s"), *GetNameSafe(this));
+	//LogOnScreen(this, FString::Printf(TEXT("StopAction: %s"), *GetNameSafe(this)), FColor::White);
 
 	//ensureAlways(bIsRunning);
 
 	UAR_ActionComponent* ActionComponent = GetOwningComponent();
 	ActionComponent->ActiveGameplayTags.RemoveTags(GrantedTags);
 
-	bIsRunning = false;
+	RepData.bIsRunning = false;
+	RepData.Instigator = Instigator;
 }
 
 
@@ -77,19 +79,23 @@ UAR_ActionComponent* UAR_BaseAction::GetOwningComponent() const
 	return Cast<UAR_ActionComponent>(GetOuter());
 }
 
-void UAR_BaseAction::OnRep_IsRunning()
+void UAR_BaseAction::OnRep_RepData()
 {
-	if (bIsRunning)
+	LogOnScreen(
+		this, FString::Printf(
+			TEXT("OnRep_RepData: IsRunning %s; Instigator %s"), RepData.bIsRunning ? TEXT("TRUE") : TEXT("FALSE"),
+			*GetNameSafe(RepData.Instigator)), FColor::Red);
+	if (RepData.bIsRunning)
 	{
-		StartAction(nullptr);
+		StartAction(RepData.Instigator);
 	}
 	else
 	{
-		StopAction(nullptr);
+		StopAction(RepData.Instigator);
 	}
 }
 
 bool UAR_BaseAction::IsRunning() const
 {
-	return bIsRunning;
+	return RepData.bIsRunning;
 }

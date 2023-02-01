@@ -19,7 +19,7 @@ UAR_ActionComponent::UAR_ActionComponent()
 	SetIsReplicatedByDefault(true);
 }
 
-void UAR_ActionComponent::GetLifetimeReplicatedProps( TArray< class FLifetimeProperty > & OutLifetimeProps ) const
+void UAR_ActionComponent::GetLifetimeReplicatedProps(TArray<class FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
@@ -28,12 +28,12 @@ void UAR_ActionComponent::GetLifetimeReplicatedProps( TArray< class FLifetimePro
 
 bool UAR_ActionComponent::ReplicateSubobjects(UActorChannel* Channel, FOutBunch* Bunch, FReplicationFlags* RepFlags)
 {
-	bool WroteSomething  = Super::ReplicateSubobjects(Channel, Bunch, RepFlags);
-	for(UAR_BaseAction* Action : Actions)
+	bool WroteSomething = Super::ReplicateSubobjects(Channel, Bunch, RepFlags);
+	for (UAR_BaseAction* Action : Actions)
 	{
-		if(Action)
+		if (Action)
 		{
-			WroteSomething |= Channel->ReplicateSubobject(Action,*Bunch,*RepFlags);
+			WroteSomething |= Channel->ReplicateSubobject(Action, *Bunch, *RepFlags);
 		}
 	}
 	return WroteSomething;
@@ -69,11 +69,7 @@ void UAR_ActionComponent::TickComponent(float DeltaTime, ELevelTick TickType,
 	{
 		FColor TextColor = Action->IsRunning() ? FColor::Blue : FColor::White;
 
-		FString ActionMsg = FString::Printf(TEXT("[%s] Action: %s - IsRunning: %s - Outer: %s"),
-		                                    *GetNameSafe(GetOwner()),
-		                                    *Action->GetName(),
-		                                    Action->IsRunning() ? TEXT("True") : TEXT("False"),
-		                                    *GetNameSafe(Action->GetOuter()));
+		FString ActionMsg = FString::Printf(TEXT("[%s] Action: %s"), *GetNameSafe(GetOwner()), *Action->GetName());
 		LogOnScreen(this, ActionMsg, TextColor, 0.0f);
 	}
 }

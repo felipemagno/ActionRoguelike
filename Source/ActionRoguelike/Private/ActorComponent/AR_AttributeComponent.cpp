@@ -59,27 +59,31 @@ bool UAR_AttributeComponent::ApplyHealthChange(AActor* InstigatingActor, float D
 		return false;
 	}
 
-	if (Delta < 0)
+	float OldHealth = Health;
+	float NewHealth = FMath::Clamp(Health + Delta, 0, HealthMax); 
+	float ActualDelta = NewHealth - OldHealth;
+	Delta *= CVarDamageMultiplier.GetValueOnGameThread();
+	
+	if (!GetOwner()->HasAuthority())
 	{
-		Delta *= CVarDamageMultiplier.GetValueOnGameThread();
-		ApplyRageChange(InstigatingActor, -Delta);
-	}
+		if (ActualDelta < 0)
+		{
+			ApplyRageChange(InstigatingActor, -ActualDelta);
+		}
 
-	if (!FMath::IsNearlyZero(Delta))
-	{
-		Health = FMath::Clamp(Health + Delta, 0, HealthMax);
-		MulticastHealthChanged(InstigatingActor, Health, Delta, Health / HealthMax);
-	}
+		if (!FMath::IsNearlyZero(ActualDelta))
+		Health = NewHealth;
+		MulticastHealthChanged(InstigatingActor, Health, ActualDelta, Health / HealthMax);
 
-	if (Health == 0)
-	{
-		MulticastOnDeath(InstigatingActor);
-		auto* GM = GetWorld()->GetAuthGameMode<AAR_GameMode>();
-		if (GM)
-			GM->ActorKilledEvent(GetOwner(), InstigatingActor);
+		if (ActualDelta < 0 && Health == 0)
+		{
+			MulticastOnDeath(InstigatingActor);
+			auto* GM = GetWorld()->GetAuthGameMode<AAR_GameMode>();
+			if (GM)
+				GM->ActorKilledEvent(GetOwner(), InstigatingActor);
+		}
 	}
-
-	return true;
+	return !FMath::IsNearlyZero(ActualDelta);
 }
 
 bool UAR_AttributeComponent::ApplyMaxHeal(AActor* InstigatingActor)

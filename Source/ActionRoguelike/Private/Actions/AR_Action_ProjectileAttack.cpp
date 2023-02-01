@@ -20,11 +20,13 @@ void UAR_Action_ProjectileAttack::StartAction_Implementation(AActor* Instigator)
 	if (InstigatorCharacter)
 	{
 		InstigatorCharacter->PlayAnimMontage(AttackAnimation);
-
-		FTimerHandle TimerHandle_AttackDelay;
-		FTimerDelegate Delegate;
-		Delegate.BindUFunction(this, "AttackDelay_Elapsed", InstigatorCharacter);
-		GetWorld()->GetTimerManager().SetTimer(TimerHandle_AttackDelay, Delegate, AttackAnimDelay, false);
+		if (InstigatorCharacter->HasAuthority())
+		{
+			FTimerHandle TimerHandle_AttackDelay;
+			FTimerDelegate Delegate;
+			Delegate.BindUFunction(this, "AttackDelay_Elapsed", InstigatorCharacter);
+			GetWorld()->GetTimerManager().SetTimer(TimerHandle_AttackDelay, Delegate, AttackAnimDelay, false);
+		}
 	}	
 }
 

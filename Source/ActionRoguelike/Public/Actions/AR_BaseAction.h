@@ -8,6 +8,19 @@
 #include "AR_BaseAction.generated.h"
 
 class UAR_ActionComponent;
+
+USTRUCT()
+struct FActionRepData
+{
+	GENERATED_BODY()
+
+public:
+	UPROPERTY()
+	bool bIsRunning;
+	UPROPERTY()
+	AActor* Instigator;
+};
+
 /**
  * 
  */
@@ -15,8 +28,10 @@ UCLASS(Abstract, Blueprintable)
 class ACTIONROGUELIKE_API UAR_BaseAction : public UObject
 {
 	GENERATED_BODY()
+
 public:
 	UAR_BaseAction();
+
 protected:
 	// Tags granted to owning actor while this Action is being executed
 	UPROPERTY(EditDefaultsOnly, Category="Tags")
@@ -30,11 +45,12 @@ protected:
 	UFUNCTION(BlueprintCallable, Category = "Action")
 	UAR_ActionComponent* GetOwningComponent() const;
 
-	UPROPERTY(ReplicatedUsing="OnRep_IsRunning")
-	bool bIsRunning;
+	UPROPERTY(ReplicatedUsing="OnRep_RepData")
+	FActionRepData RepData;
+	//bool bIsRunning;
 
 	UFUNCTION()
-	void OnRep_IsRunning();
+	void OnRep_RepData();
 
 public:
 	// Starts automatically when added 
