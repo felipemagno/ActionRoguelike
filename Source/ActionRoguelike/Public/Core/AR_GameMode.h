@@ -10,8 +10,10 @@
 class UEnvQuery;
 class UEnvQueryInstanceBlueprintWrapper;
 class AController;
+class UAR_SaveGame;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnActorKilled, AActor*, VictimActor, AActor*, KillerActor);
+
 /**
  * 
  */
@@ -21,6 +23,12 @@ class ACTIONROGUELIKE_API AAR_GameMode : public AGameModeBase
 	GENERATED_BODY()
 
 protected:
+	FString SlotName;
+
+	UPROPERTY()
+	UAR_SaveGame* CurrentSaveGame;
+
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
 	UEnvQuery* SpawnBotQuery;
 
@@ -38,7 +46,7 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category = "AI")
 	int BotMaxCount;
-	
+
 	UPROPERTY(VisibleAnywhere, Category = "AI")
 	int BotCount;
 
@@ -60,9 +68,18 @@ public:
 
 	UPROPERTY(BlueprintAssignable)
 	FOnActorKilled OnActorKilled;
-	
+
 	UFUNCTION()
 	virtual void ActorKilledEvent(AActor* VictimActor, AActor* KillerActor);
 
 	virtual void StartPlay() override;
+
+	virtual void InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage) override;
+
+	UFUNCTION(BlueprintCallable, Category = "Savegame")
+	void WriteSaveGame();
+
+	void LoadSaveGame();
+
+	virtual void HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer) override;
 };

@@ -3,6 +3,7 @@
 
 #include "Core/AR_PlayerState.h"
 
+#include "Core/AR_SaveGame.h"
 #include "Net/UnrealNetwork.h"
 
 
@@ -42,6 +43,22 @@ void AAR_PlayerState::ServerUpdateCredits_Implementation(int32 DeltaValue)
 int32 AAR_PlayerState::GetCredits()
 {
 	return PlayerCredits;
+}
+
+void AAR_PlayerState::LoadPlayerState_Implementation(UAR_SaveGame* SaveGame)
+{
+	if(SaveGame)
+	{
+		PlayerCredits = SaveGame->Credits;
+	}
+}
+
+void AAR_PlayerState::SavePlayerState_Implementation(UAR_SaveGame* SaveGame)
+{
+	if(SaveGame)
+	{
+		SaveGame->Credits = PlayerCredits;
+	}
 }
 
 void AAR_PlayerState::MulticastOnUpdateCredits_Implementation(int32 NewPlayerCredits)

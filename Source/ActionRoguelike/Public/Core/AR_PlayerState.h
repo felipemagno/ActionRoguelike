@@ -8,6 +8,8 @@
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnUpdateCredits, int32, CreditsNewValue);
 
+class UAR_SaveGame;
+
 /**
  * 
  */
@@ -38,5 +40,11 @@ public:
 
 	UFUNCTION(BlueprintGetter)
 	int32 GetCredits();
+
+	UFUNCTION(BlueprintNativeEvent)
+	void SavePlayerState(UAR_SaveGame* SaveGame);
+
+	UFUNCTION(BlueprintNativeEvent)
+	void LoadPlayerState(UAR_SaveGame* SaveGame);
 
 };

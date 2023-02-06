@@ -7,6 +7,10 @@
 #include "Core/AR_PlayerState.h"
 #include "EnvironmentQuery/EnvQueryManager.h"
 #include "Interfaces/AR_IGameplayInterface.h"
+#include "Kismet/GameplayStatics.h"
+#include "Core/AR_SaveGame.h"
+#include "GameFramework/GameStateBase.h"
+
 
 static TAutoConsoleVariable<bool> CVarSpawnBots(TEXT("ar_Spawnbots"), true,TEXT("Enable spawning of bots via timer."),
                                                 ECVF_Cheat);
@@ -15,6 +19,7 @@ AAR_GameMode::AAR_GameMode()
 {
 	SpawnTimerInterval = 2.0f;
 	AiHalfHeight = 44.0f;
+	SlotName = "SaveGame01";
 }
 
 void AAR_GameMode::StartPlay()
@@ -23,6 +28,13 @@ void AAR_GameMode::StartPlay()
 
 	GetWorldTimerManager().SetTimer(TimerHandle_SpawnAI, this, &AAR_GameMode::SpawnBotTimerElapsed, SpawnTimerInterval,
 	                                true);
+}
+
+void AAR_GameMode::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
+{
+	Super::InitGame(MapName, Options, ErrorMessage);
+	LoadSaveGame();
+	UE_LOG(LogTemp,Log,TEXT("InitGame start."))
 }
 
 void AAR_GameMode::SpawnBotTimerElapsed()
@@ -107,4 +119,51 @@ void AAR_GameMode::ActorKilledEvent(AActor* VictimActor, AActor* KillerActor)
 
 	UE_LOG(LogTemp, Log, TEXT("OnActorKilled: Victim: %s, Killer: %s"), *GetNameSafe(VictimActor),
 	       *GetNameSafe(KillerActor));
+}
+
+void AAR_GameMode::WriteSaveGame()
+{
+	for(int32 i = 0; i < GameState->PlayerArray.Num(); i++)
+	{
+		AAR_PlayerState* PlayerState = Cast<AAR_PlayerState>(GameState->PlayerArray[i]);
+		if (PlayerState)
+		{
+			PlayerState->SavePlayerState(CurrentSaveGame);
+			break;// only single player right now
+		}
+	}
+	
+	UGameplayStatics::SaveGameToSlot(CurrentSaveGame,SlotName,0);
+}
+
+void AAR_GameMode::LoadSaveGame()
+{
+	if (UGameplayStatics::DoesSaveGameExist(SlotName, 0))
+	{
+		CurrentSaveGame = Cast<UAR_SaveGame>(UGameplayStatics::LoadGameFromSlot(SlotName, 0));
+		if (CurrentSaveGame == nullptr)
+		{
+			UE_LOG(LogTemp,Warning,TEXT("Failed to load save data that already exists."))
+			return;
+		}
+
+		UE_LOG(LogTemp,Log,TEXT("Loaded save game data."))
+	}
+	else
+	{
+		CurrentSaveGame = Cast<UAR_SaveGame>(UGameplayStatics::CreateSaveGameObject(UAR_SaveGame::StaticClass()));
+
+		UE_LOG(LogTemp,Log,TEXT("Created save game data."))
+	}
+}
+
+void AAR_GameMode::HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer)
+{
+	Super::HandleStartingNewPlayer_Implementation(NewPlayer);
+	UE_LOG(LogTemp,Log,TEXT("Handle new player %s"),*GetNameSafe(NewPlayer))
+	AAR_PlayerState* PlayerState = NewPlayer->GetPlayerState<AAR_PlayerState>();
+	if(PlayerState)
+	{
+		PlayerState->LoadPlayerState(CurrentSaveGame);
+	}
 }
