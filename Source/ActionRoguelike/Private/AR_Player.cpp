@@ -126,6 +126,7 @@ void AAR_Player::Death(AActor* InstigatingActor, UAR_AttributeComponent* OwningA
 		DisableInput(PlayerController);
 	}
 	SetActorEnableCollision(false);
+	// SetLifeSpan(5.0f);
 }
 
 void AAR_Player::HealthChanged(AActor* InstigatingActor, UAR_AttributeComponent* OwningAttribute,

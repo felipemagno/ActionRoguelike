@@ -4,6 +4,7 @@
 #include "ActorComponent/AR_AttributeComponent.h"
 
 #include "Core/AR_GameMode.h"
+#include "Kismet/KismetSystemLibrary.h"
 #include "Net/UnrealNetwork.h"
 
 static TAutoConsoleVariable<float> CVarDamageMultiplier(
@@ -29,6 +30,7 @@ UAR_AttributeComponent::UAR_AttributeComponent()
 
 	SetIsReplicatedByDefault(true);
 }
+
 
 void UAR_AttributeComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
@@ -59,31 +61,34 @@ bool UAR_AttributeComponent::ApplyHealthChange(AActor* InstigatingActor, float D
 		return false;
 	}
 
-	float OldHealth = Health;
-	float NewHealth = FMath::Clamp(Health + Delta, 0, HealthMax); 
-	float ActualDelta = NewHealth - OldHealth;
 	Delta *= CVarDamageMultiplier.GetValueOnGameThread();
-	
-	if (!GetOwner()->HasAuthority())
+	float OldHealth = Health;
+	float NewHealth = FMath::Clamp(Health + Delta, 0, HealthMax);
+	float ActualDelta = NewHealth - OldHealth;
+
+	if (!FMath::IsNearlyZero(ActualDelta))
 	{
-		if (ActualDelta < 0)
-		{
-			ApplyRageChange(InstigatingActor, -ActualDelta);
-		}
+		ServerChangeHealth(InstigatingActor, NewHealth, ActualDelta);
 
-		if (!FMath::IsNearlyZero(ActualDelta))
-		Health = NewHealth;
-		MulticastHealthChanged(InstigatingActor, Health, ActualDelta, Health / HealthMax);
-
-		if (ActualDelta < 0 && Health == 0)
-		{
-			MulticastOnDeath(InstigatingActor);
-			auto* GM = GetWorld()->GetAuthGameMode<AAR_GameMode>();
-			if (GM)
-				GM->ActorKilledEvent(GetOwner(), InstigatingActor);
-		}
+		// if (ActualDelta < 0)
+		// {
+		// 	ApplyRageChange(InstigatingActor, -ActualDelta);
+		// }
+		//
+		// if (!FMath::IsNearlyZero(ActualDelta))
+		// 	Health = NewHealth;
+		// MulticastHealthChanged(InstigatingActor, Health, ActualDelta, Health / HealthMax);
+		//
+		// if (ActualDelta < 0 && Health == 0)
+		// {
+		// 	MulticastOnDeath(InstigatingActor);
+		// 	auto* GM = GetWorld()->GetAuthGameMode<AAR_GameMode>();
+		// 	if (GM)
+		// 		GM->ActorKilledEvent(GetOwner(), InstigatingActor);
+		// }
+		return true;
 	}
-	return !FMath::IsNearlyZero(ActualDelta);
+	return false;
 }
 
 bool UAR_AttributeComponent::ApplyMaxHeal(AActor* InstigatingActor)
@@ -123,6 +128,27 @@ bool UAR_AttributeComponent::IsFullHealth() const
 float UAR_AttributeComponent::GetHealthPercentage() const
 {
 	return Health / HealthMax;
+}
+
+void UAR_AttributeComponent::ServerChangeHealth_Implementation(AActor* InstigatingActor, float NewHealthValue,
+                                                               float ActualDeltaValue)
+{
+	if (ActualDeltaValue < 0)
+	{
+		ApplyRageChange(InstigatingActor, -ActualDeltaValue);
+	}
+
+	if (!FMath::IsNearlyZero(ActualDeltaValue))
+		Health = NewHealthValue;
+	MulticastHealthChanged(InstigatingActor, Health, ActualDeltaValue, Health / HealthMax);
+
+	if (ActualDeltaValue < 0 && Health == 0)
+	{
+		MulticastOnDeath(InstigatingActor);
+		auto* GM = GetWorld()->GetAuthGameMode<AAR_GameMode>();
+		if (GM)
+			GM->ActorKilledEvent(GetOwner(), InstigatingActor);
+	}
 }
 
 void UAR_AttributeComponent::MulticastHealthChanged_Implementation(AActor* InstigatingActor, float NewHealthValue,

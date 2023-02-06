@@ -42,6 +42,9 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Replicated, Category = "Attributes")
 	float RageMax;
 
+UFUNCTION(Server,Reliable)
+	void ServerChangeHealth(AActor* InstigatingActor, float NewHealthValue, float ActualDeltaValue);
+	
 	UFUNCTION(NetMulticast, Unreliable)
 	void MulticastHealthChanged(AActor* InstigatingActor, float NewHealthValue, float DeltaValue,
 	                            float NewHealthPercentage);

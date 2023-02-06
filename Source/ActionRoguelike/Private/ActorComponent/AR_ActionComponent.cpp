@@ -55,6 +55,7 @@ void UAR_ActionComponent::BeginPlay()
 }
 
 
+
 // Called every frame
 void UAR_ActionComponent::TickComponent(float DeltaTime, ELevelTick TickType,
                                         FActorComponentTickFunction* ThisTickFunction)
@@ -99,6 +100,20 @@ void UAR_ActionComponent::AddAction(AActor* Instigator, TSubclassOf<UAR_BaseActi
 	}
 }
 
+void UAR_ActionComponent::RemoveAction(UAR_BaseAction* ActionToRemove)
+{
+	if (ensure(ActionToRemove && !ActionToRemove->IsRunning()))
+	{
+		return;
+	}
+	
+	if (!GetOwner()->HasAuthority())
+	{
+		ServerRemoveAction(ActionToRemove);
+	}
+	
+	Actions.Remove(ActionToRemove);
+}
 
 bool UAR_ActionComponent::StartAction(AActor* Instigator, FGameplayTag ActionTag)
 {
@@ -132,6 +147,11 @@ bool UAR_ActionComponent::StopAction(AActor* Instigator, FGameplayTag ActionTag)
 	{
 		if (Action && Action->ActionTag == ActionTag && Action->IsRunning())
 		{
+			if (!GetOwner()->HasAuthority())
+			{
+				ServerStopAction(Instigator, ActionTag);
+			}
+			
 			Action->StopAction(GetOwner());
 			CurrentAction = FGameplayTag::EmptyTag;
 			return true;
@@ -140,22 +160,22 @@ bool UAR_ActionComponent::StopAction(AActor* Instigator, FGameplayTag ActionTag)
 	return false;
 }
 
-void UAR_ActionComponent::RemoveAction(UAR_BaseAction* ActionToRemove)
-{
-	if (ensure(ActionToRemove && !ActionToRemove->IsRunning()))
-	{
-		return;
-	}
-
-	Actions.Remove(ActionToRemove);
-}
-
 void UAR_ActionComponent::ServerStartAction_Implementation(AActor* Instigator, FGameplayTag ActionTag)
 {
 	StartAction(Instigator, ActionTag);
 }
 
+void UAR_ActionComponent::ServerStopAction_Implementation(AActor* Instigator, FGameplayTag ActionTag)
+{
+	StopAction(Instigator,ActionTag);
+}
+
 void UAR_ActionComponent::ServerAddAction_Implementation(AActor* Instigator, TSubclassOf<UAR_BaseAction> NewAction)
 {
 	AddAction(Instigator, NewAction);
+}
+
+void UAR_ActionComponent::ServerRemoveAction_Implementation(UAR_BaseAction* ActionToRemove)
+{
+	RemoveAction(ActionToRemove);
 }

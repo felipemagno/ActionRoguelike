@@ -50,7 +50,13 @@ protected:
 	void ServerStartAction(AActor* Instigator, FGameplayTag ActionTag);
 
 	UFUNCTION(Server, Reliable)
+	void ServerStopAction(AActor* Instigator, FGameplayTag ActionTag);
+
+	UFUNCTION(Server, Reliable)
 	void ServerAddAction(AActor* Instigator, TSubclassOf<UAR_BaseAction> NewAction);
+
+	UFUNCTION(Server, Reliable)
+	void ServerRemoveAction(UAR_BaseAction* ActionToRemove);
 
 public:
 	// Called every frame
