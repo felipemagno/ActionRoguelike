@@ -80,6 +80,7 @@ public:
 	void WriteSaveGame();
 
 	void LoadSaveGame();
+	void LoadActorsData();
 
 	virtual void HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer) override;
 };

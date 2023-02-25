@@ -11,6 +11,7 @@ UCLASS(Abstract)
 class ACTIONROGUELIKE_API AAR_ItemChest : public AActor, public IAR_IGameplayInterface
 {
 	GENERATED_BODY()
+
 public:
 	UPROPERTY(EditAnywhere)
 	float TargetPitch;
@@ -21,7 +22,7 @@ public:
 	AAR_ItemChest();
 
 protected:
-	UPROPERTY(ReplicatedUsing="OnRep_LidOpened",BlueprintReadOnly) //RepNotify
+	UPROPERTY(ReplicatedUsing="OnRep_LidOpened", BlueprintReadOnly, SaveGame) //RepNotify
 	bool bLidOpened;
 
 	UFUNCTION(BlueprintNativeEvent)
@@ -36,6 +37,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	virtual void OnActorLoaded_Implementation() override;
 
 public:
 	// Called every frame

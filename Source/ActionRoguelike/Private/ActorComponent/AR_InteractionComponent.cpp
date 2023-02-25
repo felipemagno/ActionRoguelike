@@ -85,6 +85,7 @@ void UAR_InteractionComponent::FindBestInteractable()
 		TArray<FHitResult> HitResults;
 		FCollisionShape CollisionShape;
 		CollisionShape.SetSphere(TraceRadius);
+		float DistanceOwner = FVector::DistSquared(GetOwner()->GetActorLocation(),EyeLocation);
 
 		bool bBlockingHit = GetWorld()->SweepMultiByObjectType(HitResults, EyeLocation, EndLocation, FQuat::Identity,
 		                                                       ObjectQueryParams,
@@ -96,6 +97,10 @@ void UAR_InteractionComponent::FindBestInteractable()
 			AActor* HitActor = hit.GetActor();
 			if (HitActor)
 			{
+				if (FVector::DistSquared(HitActor->GetActorLocation(),EyeLocation) < DistanceOwner)
+				{
+					continue;
+				}
 				FColor DebugSphereColor;
 				if (bIsDebugging)
 				{

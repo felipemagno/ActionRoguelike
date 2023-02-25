@@ -37,6 +37,12 @@ void AAR_ItemChest::BeginPlay()
 	Super::BeginPlay();
 }
 
+void AAR_ItemChest::OnActorLoaded_Implementation()
+{
+	IAR_IGameplayInterface::OnActorLoaded_Implementation();
+	if (bLidOpened) OnRep_LidOpened();
+}
+
 // Called every frame
 void AAR_ItemChest::Tick(float DeltaTime)
 {

@@ -25,6 +25,9 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	void Interact(APawn* InstigatorPawn);
 
+	UFUNCTION(BlueprintNativeEvent)
+	void OnActorLoaded();
+
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent)
 	bool ReceiveCredits(int32 CreditsReceived);
 

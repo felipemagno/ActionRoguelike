@@ -4,12 +4,14 @@
 #include "Core/AR_GameMode.h"
 
 #include "AR_Player.h"
+#include "EngineUtils.h"
 #include "Core/AR_PlayerState.h"
 #include "EnvironmentQuery/EnvQueryManager.h"
 #include "Interfaces/AR_IGameplayInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "Core/AR_SaveGame.h"
 #include "GameFramework/GameStateBase.h"
+#include "Serialization/ObjectAndNameAsStringProxyArchive.h"
 
 
 static TAutoConsoleVariable<bool> CVarSpawnBots(TEXT("ar_Spawnbots"), true,TEXT("Enable spawning of bots via timer."),
@@ -28,13 +30,14 @@ void AAR_GameMode::StartPlay()
 
 	GetWorldTimerManager().SetTimer(TimerHandle_SpawnAI, this, &AAR_GameMode::SpawnBotTimerElapsed, SpawnTimerInterval,
 	                                true);
+	LoadActorsData();
 }
 
 void AAR_GameMode::InitGame(const FString& MapName, const FString& Options, FString& ErrorMessage)
 {
 	Super::InitGame(MapName, Options, ErrorMessage);
 	LoadSaveGame();
-	UE_LOG(LogTemp,Log,TEXT("InitGame start."))
+	UE_LOG(LogTemp, Log, TEXT("InitGame start."))
 }
 
 void AAR_GameMode::SpawnBotTimerElapsed()
@@ -123,17 +126,41 @@ void AAR_GameMode::ActorKilledEvent(AActor* VictimActor, AActor* KillerActor)
 
 void AAR_GameMode::WriteSaveGame()
 {
-	for(int32 i = 0; i < GameState->PlayerArray.Num(); i++)
+	for (int32 i = 0; i < GameState->PlayerArray.Num(); i++)
 	{
 		AAR_PlayerState* PlayerState = Cast<AAR_PlayerState>(GameState->PlayerArray[i]);
 		if (PlayerState)
 		{
 			PlayerState->SavePlayerState(CurrentSaveGame);
-			break;// only single player right now
+			break; // only single player right now
 		}
 	}
-	
-	UGameplayStatics::SaveGameToSlot(CurrentSaveGame,SlotName,0);
+
+	CurrentSaveGame->SavedActors.Empty();
+	for (FActorIterator It(GetWorld()); It; ++It)
+	{
+		AActor* Actor = *It;
+		if (!Actor->Implements<UAR_IGameplayInterface>())
+		{
+			continue;
+		}
+
+		FActorSaveData ActorData;
+		ActorData.ActorName = Actor->GetName();
+		ActorData.ActorTransform = Actor->GetActorTransform();
+
+		FMemoryWriter MemoryWriter(ActorData.ByteData);
+		// Find only variables with UPROPERTY(SaveGame)
+		FObjectAndNameAsStringProxyArchive Archive(MemoryWriter, true);
+		// Converts Actor's savegame UPROPERTIES into binary array
+		Archive.ArIsSaveGame = true;
+
+		Actor->Serialize(Archive);
+		
+		CurrentSaveGame->SavedActors.Add(ActorData);
+	}
+
+	UGameplayStatics::SaveGameToSlot(CurrentSaveGame, SlotName, 0);
 }
 
 void AAR_GameMode::LoadSaveGame()
@@ -143,27 +170,83 @@ void AAR_GameMode::LoadSaveGame()
 		CurrentSaveGame = Cast<UAR_SaveGame>(UGameplayStatics::LoadGameFromSlot(SlotName, 0));
 		if (CurrentSaveGame == nullptr)
 		{
-			UE_LOG(LogTemp,Warning,TEXT("Failed to load save data that already exists."))
+			UE_LOG(LogTemp, Warning, TEXT("Failed to load save data that already exists."))
 			return;
 		}
 
-		UE_LOG(LogTemp,Log,TEXT("Loaded save game data."))
+		// This will not work for world partition:
+		/*"FYI In UE5 if you have World Partition enabled and Actor has "Is Spatially Loaded" set to true,
+		 * then it may not be available in the GetWorld() actors iterator during GameModeBase::InitGame." 
+		 */
+
+		// for (FActorIterator It(GetWorld()); It; ++It)
+		// {
+		// 	AActor* Actor = *It;
+		// 	if (!Actor->Implements<UAR_IGameplayInterface>())
+		// 	{
+		// 		continue;
+		// 	}
+		//
+		// 	for (FActorSaveData ActorData : CurrentSaveGame->SavedActors)
+		// 	{
+		// 		if (ActorData.ActorName == Actor->GetName())
+		// 		{
+		// 			Actor->SetActorTransform(ActorData.ActorTransform);
+		// 			break;
+		// 		}
+		// 	}
+		// }
+
+		UE_LOG(LogTemp, Log, TEXT("Loaded save game data."))
 	}
 	else
 	{
 		CurrentSaveGame = Cast<UAR_SaveGame>(UGameplayStatics::CreateSaveGameObject(UAR_SaveGame::StaticClass()));
 
-		UE_LOG(LogTemp,Log,TEXT("Created save game data."))
+		UE_LOG(LogTemp, Log, TEXT("Created save game data."))
+	}
+}
+
+void AAR_GameMode::LoadActorsData()
+{
+	for (FActorIterator It(GetWorld()); It; ++It)
+	{
+		AActor* Actor = *It;
+		if (!Actor->Implements<UAR_IGameplayInterface>())
+		{
+			continue;
+		}
+
+		for (FActorSaveData ActorData : CurrentSaveGame->SavedActors)
+		{
+			if (ActorData.ActorName == Actor->GetName())
+			{
+				Actor->SetActorTransform(ActorData.ActorTransform);
+
+				FMemoryReader MemoryReader(ActorData.ByteData);
+				
+				FObjectAndNameAsStringProxyArchive Archive(MemoryReader, true);				
+				Archive.ArIsSaveGame = true;
+				// Converts binary array into Actor's variables
+				Actor->Serialize(Archive);
+
+				IAR_IGameplayInterface::Execute_OnActorLoaded(Actor);
+				break;
+			}
+		}
 	}
 }
 
 void AAR_GameMode::HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer)
 {
 	Super::HandleStartingNewPlayer_Implementation(NewPlayer);
-	UE_LOG(LogTemp,Log,TEXT("Handle new player %s"),*GetNameSafe(NewPlayer))
+	UE_LOG(LogTemp, Log, TEXT("Handle new player %s"), *GetNameSafe(NewPlayer))
 	AAR_PlayerState* PlayerState = NewPlayer->GetPlayerState<AAR_PlayerState>();
-	if(PlayerState)
+	if (PlayerState)
 	{
 		PlayerState->LoadPlayerState(CurrentSaveGame);
 	}
+
+	// Loading information when each player is loaded
+	LoadActorsData();
 }
